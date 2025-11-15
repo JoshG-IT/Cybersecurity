@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300">
+  <title>Appendix — Flag Answers Overview</title>
+
+  <!-- Background -->
+  <defs>
+    <!-- Corkboard-inspired gradient -->
+    <linearGradient id="darkBoard" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1017"/>
+      <stop offset="50%" stop-color="#16242f"/>
+      <stop offset="100%" stop-color="#0a131d"/>
+    </linearGradient>
+
+    <!-- Glow for lines -->
+    <linearGradient id="lineGlow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ff3d3d" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Sticky note gradient -->
+    <linearGradient id="noteBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1b4d68"/>
+      <stop offset="100%" stop-color="#0f2e41"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background layer -->
+  <rect width="1000" height="300" fill="url(#darkBoard)"/>
+
+  <!-- Title -->
+  <text x="50%" y="70" text-anchor="middle"
+        fill="#e6f7ff"
+        font-size="32"
+        font-weight="700"
+        font-family="Inter, Roboto, Arial, sans-serif">
+    Appendix — Flag Answers Overview
+  </text>
+  <line x1="320" y1="90" x2="680" y2="90"
+        stroke="#2da8d8" stroke-width="2" opacity="0.7"/>
+
+  <!-- Connecting lines (subtle red paths) -->
+  <g stroke="url(#lineGlow)" stroke-width="1.5" opacity="0.8">
+    <path d="M200 200 Q300 120, 400 180 T600 200" fill="none"/>
+    <path d="M400 180 Q600 100, 800 180" fill="none"/>
+  </g>
+
+  <!-- Sticky note group -->
+  <g font-family="monospace" font-size="13" fill="#e6f7ff" text-anchor="middle">
+    <!-- Left group (1–5) -->
+    <rect x="160" y="180" width="70" height="60" rx="6" fill="url(#noteBlue)" stroke="#2da8d8" opacity="0.9"/>
+    <text x="195" y="210" font-weight="700">Flag 1–5</text>
+    <text x="195" y="225" fill="#a7d3ea">Execution</text>
+
+    <!-- Middle group (6–10) -->
+    <rect x="460" y="160" width="90" height="60" rx="6" fill="url(#noteBlue)" stroke="#2da8d8" opacity="0.9"/>
+    <text x="505" y="190" font-weight="700">Flag 6–10</text>
+    <text x="505" y="205" fill="#a7d3ea">Recon / Exfil</text>
+
+    <!-- Right group (11–15) -->
+    <rect x="760" y="180" width="90" height="60" rx="6" fill="url(#noteBlue)" stroke="#2da8d8" opacity="0.9"/>
+    <text x="805" y="210" font-weight="700">Flag 11–15</text>
+    <text x="805" y="225" fill="#a7d3ea">Persistence / Cover</text>
+  </g>
+
+  <!-- Accent dots (red pins at corners) -->
+  <g fill="#ff5252" opacity="0.8">
+    <circle cx="160" cy="180" r="3"/>
+    <circle cx="230" cy="180" r="3"/>
+    <circle cx="460" cy="160" r="3"/>
+    <circle cx="550" cy="160" r="3"/>
+    <circle cx="760" cy="180" r="3"/>
+    <circle cx="850" cy="180" r="3"/>
+  </g>
+</svg>
