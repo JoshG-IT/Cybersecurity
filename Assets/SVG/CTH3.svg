@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200" width="1200" height="200" role="img" aria-labelledby="title">
+  <title id="title">Technical Summary — Analyst View</title>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1a24"/>
+      <stop offset="100%" stop-color="#112d3c"/>
+    </linearGradient>
+
+    <linearGradient id="accent" x1="0" x2="1">
+      <stop offset="0%" stop-color="#00c2b7"/>
+      <stop offset="100%" stop-color="#00a0a0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="200" rx="14" fill="url(#bg)" />
+
+  <!-- Terminal frame -->
+  <rect x="60" y="40" width="1080" height="120" rx="6" fill="#0e1f28" stroke="#1a3e50" stroke-width="1.5" />
+
+  <!-- Title bar lights -->
+  <circle cx="80" cy="60" r="6" fill="#ff5f56"/>
+  <circle cx="100" cy="60" r="6" fill="#ffbd2e"/>
+  <circle cx="120" cy="60" r="6" fill="#27c93f"/>
+
+  <!-- PowerShell-style text -->
+  <text x="150" y="85" font-family="Consolas, monospace" font-size="16" fill="#00ffc6">PS C:\Users\Analyst&gt;</text>
+  <text x="150" y="110" font-family="Consolas, monospace" font-size="16" fill="#7fffd4">
+    Get-Clipboard; whoami; Test-NetConnection; New-ScheduledTask
+    <animate attributeName="opacity" values="0.4;1;0.4" dur="6s" repeatCount="indefinite"/>
+  </text>
+
+  <!-- Flow arrows (attack sequence) -->
+  <g transform="translate(150,150)">
+    <rect x="0" y="0" width="140" height="24" rx="4" fill="#1b3a47"/>
+    <text x="70" y="16" text-anchor="middle" fill="#00ffc6" font-family="Inter, sans-serif" font-size="13" font-weight="600">Execution</text>
+
+    <polygon points="150,12 170,2 170,22" fill="url(#accent)">
+      <animateTransform attributeName="transform" type="translate" values="0;20;0" dur="3s" repeatCount="indefinite"/>
+    </polygon>
+
+    <rect x="190" y="0" width="140" height="24" rx="4" fill="#1b3a47"/>
+    <text x="260" y="16" text-anchor="middle" fill="#00ffc6" font-family="Inter, sans-serif" font-size="13" font-weight="600">Recon</text>
+
+    <polygon points="340,12 360,2 360,22" fill="url(#accent)">
+      <animateTransform attributeName="transform" type="translate" values="0;20;0" dur="3s" begin="1s" repeatCount="indefinite"/>
+    </polygon>
+
+    <rect x="380" y="0" width="140" height="24" rx="4" fill="#1b3a47"/>
+    <text x="450" y="16" text-anchor="middle" fill="#00ffc6" font-family="Inter, sans-serif" font-size="13" font-weight="600">Exfiltration</text>
+  </g>
+
+  <!-- Title -->
+  <text x="50%" y="190" text-anchor="middle" fill="#b0f0e0" font-family="Inter, Roboto, Arial, sans-serif" font-size="20" font-weight="700">
+    Technical Summary — Analyst View
+  </text>
+</svg>
