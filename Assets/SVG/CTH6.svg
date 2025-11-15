@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 250" width="1200" height="250" role="img" aria-labelledby="title">
+  <title id="title">Technical Matrix of Observables — Minimal Blueprint</title>
+
+  <!-- Background -->
+  <rect width="1200" height="250" rx="12" fill="#0b131c"/>
+
+  <!-- Title -->
+  <text x="50%" y="55" text-anchor="middle"
+        fill="#e6f7ff"
+        font-size="30"
+        font-weight="700"
+        font-family="Inter, Roboto, Arial, sans-serif">
+    Technical Matrix of Observables
+  </text>
+  <text x="50%" y="80" text-anchor="middle"
+        fill="#8bbfd3"
+        font-size="15">
+    Host → Process → File → Network
+  </text>
+
+  <!-- Connection line segments -->
+  <path d="M286 150 L414 150" stroke="#2da8d8" stroke-width="2" fill="none"/>
+  <path d="M486 150 L614 150" stroke="#2da8d8" stroke-width="2" fill="none"/>
+  <path d="M686 150 L814 150" stroke="#2da8d8" stroke-width="2" fill="none"/>
+  <path d="M886 150 L1014 150" stroke="#2da8d8" stroke-width="2" fill="none"/>
+
+  <!-- Host -->
+  <g>
+    <circle cx="250" cy="150" r="36" stroke="#2da8d8" stroke-width="2" fill="none"/>
+    <rect x="235" y="138" width="30" height="24" rx="3" ry="3" fill="#2da8d8" opacity="0.7"/>
+    <text x="250" y="190" text-anchor="middle" fill="#8dd3f7" font-size="13">gab-intern-vm</text>
+  </g>
+
+  <!-- Process -->
+  <g>
+    <circle cx="450" cy="150" r="36" stroke="#2da8d8" stroke-width="2" fill="none"/>
+    <text x="450" y="155" text-anchor="middle" fill="#8dd3f7" font-size="22" font-weight="700">PS</text>
+    <text x="450" y="190" text-anchor="middle" fill="#8dd3f7" font-size="13">PowerShell.exe</text>
+  </g>
+
+  <!-- File -->
+  <g>
+    <circle cx="650" cy="150" r="36" stroke="#2da8d8" stroke-width="2" fill="none"/>
+    <rect x="635" y="136" width="30" height="28" rx="3" ry="3" fill="#2da8d8" opacity="0.7"/>
+    <text x="650" y="190" text-anchor="middle" fill="#8dd3f7" font-size="13">ReconArtifacts.zip</text>
+  </g>
+
+  <!-- Network -->
+  <g>
+    <circle cx="850" cy="150" r="36" stroke="#2da8d8" stroke-width="2" fill="none"/>
+    <path d="M830 145c-6-10 10-22 25-15 6-10 30-6 30 8 6 4 6 18-8 18h-40c-8 0-12-8-7-11z"
+          fill="#2da8d8" opacity="0.7"/>
+    <text x="850" y="190" text-anchor="middle" fill="#8dd3f7" font-size="13">100.29.147.161</text>
+  </g>
+</svg>
