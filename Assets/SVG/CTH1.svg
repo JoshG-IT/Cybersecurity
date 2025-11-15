@@ -80,4 +80,6 @@
   <g opacity="0.08" transform="translate(1080,80)">
     <circle cx="0" cy="0" r="26" stroke="#00C9FF" stroke-width="2" fill="none"/>
     <circle cx="0" cy="0" r="8" fill="#00C9FF"/>
-    <path d="M-15 0 A15 15 0 0 1 15 0" fill="none" strok
+    <path d="M-15 0 A15 15 0 0 1 15 0" fill="none" stroke="#00C9FF" stroke-width="1.5"/>
+  </g>
+</svg>
