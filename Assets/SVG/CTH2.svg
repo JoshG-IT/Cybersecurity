@@ -1,42 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 160" width="1200" height="160" role="img" aria-labelledby="title">
-  <title id="title">Non-Technical Summary — Storytelling for Everyone</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" width="1000" height="250">
+  <title>Non-Technical Summary — Storytelling for Everyone</title>
 
-  <!-- Background gradient with gentle motion -->
+  <!-- Gradient background -->
   <defs>
-    <linearGradient id="subtleShift" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#10273f">
-        <animate attributeName="offset" values="0;1;0" dur="10s" repeatCount="indefinite"/>
-      </stop>
-      <stop offset="100%" stop-color="#284b73">
-        <animate attributeName="offset" values="1;0;1" dur="10s" repeatCount="indefinite"/>
-      </stop>
+    <linearGradient id="softBlueGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#02121e"/>
+      <stop offset="50%" stop-color="#0a2e3f"/>
+      <stop offset="100%" stop-color="#123e52"/>
     </linearGradient>
+
+    <!-- Subtle glowing overlay -->
+    <radialGradient id="blueGlow" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="rgba(45,168,216,0.25)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
   </defs>
 
-  <!-- Background panel -->
-  <rect width="1200" height="160" rx="14" fill="url(#subtleShift)"/>
+  <!-- Background layers -->
+  <rect width="1000" height="250" fill="url(#softBlueGradient)"/>
+  <rect width="1000" height="250" fill="url(#blueGlow)"/>
 
-  <!-- Title text -->
-  <text x="50%" y="88" text-anchor="middle"
-        fill="#eaf4ff"
-        font-family="Inter, Roboto, Arial, sans-serif"
+  <!-- Title -->
+  <text x="50%" y="120" text-anchor="middle"
+        fill="#e6f7ff"
         font-size="34"
         font-weight="700"
-        letter-spacing="0.5">
+        font-family="Inter, Roboto, Arial, sans-serif"
+        letter-spacing="1px">
     Non-Technical Summary
   </text>
 
-  <!-- Subtitle text -->
-  <text x="50%" y="120" text-anchor="middle"
-        fill="#a8c6e2"
-        font-family="Inter, Roboto, Arial, sans-serif"
-        font-size="16"
-        font-weight="400">
+  <!-- Subtitle -->
+  <text x="50%" y="150" text-anchor="middle"
+        fill="#a7d3ea"
+        font-size="18"
+        font-weight="400"
+        font-family="Inter, Roboto, Arial, sans-serif">
     Storytelling for Everyone
   </text>
 
-  <!-- Soft underline pulse -->
-  <rect x="420" y="125" width="360" height="2" fill="#7bb3e0" opacity="0.5">
-    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" repeatCount="indefinite"/>
-  </rect>
+  <!-- Underline accent -->
+  <line x1="360" y1="165" x2="640" y2="165"
+        stroke="#2da8d8" stroke-width="2" opacity="0.7"/>
 </svg>
