@@ -43,7 +43,8 @@
           fill="url(#shieldGrad)" stroke="#06344a" stroke-width="2"/>
     
     <!-- Shield inner highlight -->
-  
+    <path d="M140 28c0 0-48 18-68 34-10 8-14 34-14 34s22 6 36 6 42-6 42-6 30 6 42 6 36-6 36-6 0-26-12-46c-10-18-58-28-58-28z"
+          fill="rgba(255,255,255,0.06)"/>
     <!-- Magnifier overlapping -->
     <g transform="translate(140,110) rotate(-20)">
       <circle cx="0" cy="0" r="24" fill="#07121a" stroke="#8dd3f7" stroke-width="4"/>
