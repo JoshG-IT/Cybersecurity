@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" width="1200" height="260" role="img" aria-labelledby="title">
+  <title id="title">MITRE ATTACK Mapping — Mapped Adversary Behavior Techniques</title>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0f14"/>
+      <stop offset="100%" stop-color="#111a24"/>
+    </linearGradient>
+
+    <linearGradient id="cellBlue" x1="0" x2="1">
+      <stop offset="0%" stop-color="#1e6ca6"/>
+      <stop offset="100%" stop-color="#328dbf"/>
+    </linearGradient>
+
+    <linearGradient id="cellRed" x1="0" x2="1">
+      <stop offset="0%" stop-color="#a6212e"/>
+      <stop offset="100%" stop-color="#d13b3b"/>
+    </linearGradient>
+
+    <linearGradient id="cellGray" x1="0" x2="1">
+      <stop offset="0%" stop-color="#2a2f34"/>
+      <stop offset="100%" stop-color="#3a4149"/>
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="260" rx="14" fill="url(#bg)" />
+
+  <!-- Title -->
+  <text x="50%" y="50" text-anchor="middle"
+        fill="#cde4f0"
+        font-family="Inter, Roboto, Arial, sans-serif"
+        font-size="30"
+        font-weight="700">
+    MITRE ATTACK Mapping
+  </text>
+  <text x="50%" y="75" text-anchor="middle"
+        fill="#8bbfd3"
+        font-size="16"
+        font-weight="400">
+    Mapped Adversary Behavior Techniques
+  </text>
+
+  <!-- Matrix grid (5 columns × 3 rows simplified) -->
+  <g transform="translate(120,100)" font-family="Inter, sans-serif" font-size="13" font-weight="600" text-anchor="middle">
+
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="180" height="50" rx="6" fill="url(#cellBlue)" filter="url(#shadow)"/>
+    <text x="90" y="30" fill="#fff">T1059.001<br/>PowerShell</text>
+
+    <rect x="200" y="0" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="290" y="30" fill="#c8d2da">T1082<br/>System Info</text>
+
+    <rect x="400" y="0" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="490" y="30" fill="#c8d2da">T1033<br/>User Discovery</text>
+
+    <rect x="600" y="0" width="180" height="50" rx="6" fill="url(#cellBlue)" filter="url(#shadow)"/>
+    <text x="690" y="30" fill="#fff">T1071.001<br/>Network Comm</text>
+
+    <rect x="800" y="0" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="890" y="30" fill="#c8d2da">T1560<br/>Archive Data</text>
+
+    <!-- Row 2 -->
+    <rect x="0" y="70" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="90" y="100" fill="#c8d2da">T1087<br/>Account Discovery</text>
+
+    <rect x="200" y="70" width="180" height="50" rx="6" fill="url(#cellBlue)" filter="url(#shadow)"/>
+    <text x="290" y="100" fill="#fff">T1057<br/>Process Discovery</text>
+
+    <rect x="400" y="70" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="490" y="100" fill="#c8d2da">T1115<br/>Clipboard</text>
+
+    <rect x="600" y="70" width="180" height="50" rx="6" fill="url(#cellBlue)" filter="url(#shadow)"/>
+    <text x="690" y="100" fill="#fff">T1053.005<br/>Scheduled Task</text>
+
+    <rect x="800" y="70" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="890" y="100" fill="#c8d2da">T1547.001<br/>Registry Run Key</text>
+
+    <!-- Row 3 -->
+    <rect x="0" y="140" width="180" height="50" rx="6" fill="url(#cellRed)" filter="url(#shadow)"/>
+    <text x="90" y="170" fill="#fff">T1036<br/>Masquerading</text>
+
+    <rect x="200" y="140" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="290" y="170" fill="#c8d2da">T1071.001<br/>Exfil over HTTP</text>
+
+    <rect x="400" y="140" width="180" height="50" rx="6" fill="url(#cellRed)" filter="url(#shadow)"/>
+    <text x="490" y="170" fill="#fff">Deception<br/>Artifact</text>
+
+    <rect x="600" y="140" width="180" height="50" rx="6" fill="url(#cellGray)" filter="url(#shadow)"/>
+    <text x="690" y="170" fill="#c8d2da">T1082<br/>Recon Data</text>
+
+    <rect x="800" y="140" width="180" height="50" rx="6" fill="url(#cellRed)" filter="url(#shadow)"/>
+    <text x="890" y="170" fill="#fff">Impact / Cover</text>
+  </g>
+</svg>
