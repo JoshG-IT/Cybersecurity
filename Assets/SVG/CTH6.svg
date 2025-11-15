@@ -15,7 +15,7 @@
   <text x="50%" y="80" text-anchor="middle"
         fill="#8bbfd3"
         font-size="15">
-    Host → Process → File → Network
+    Host -> Process -> File -> Network
   </text>
 
   <!-- Connection line segments -->
