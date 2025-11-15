@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" width="1000" height="250">
+  <title>Ports, Protocols, and Destinations Matrix — Network Visibility</title>
+
+  <!-- Background -->
+  <defs>
+    <!-- Deep navy gradient -->
+    <linearGradient id="darkNavy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07131d"/>
+      <stop offset="50%" stop-color="#0e2534"/>
+      <stop offset="100%" stop-color="#102f42"/>
+    </linearGradient>
+
+    <!-- Subtle grid -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#163647" stroke-width="0.5" opacity="0.15"/>
+    </pattern>
+
+    <!-- Glow line gradient -->
+    <linearGradient id="glowLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00bcd4" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#6fd3ff" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background layers -->
+  <rect width="1000" height="250" fill="url(#darkNavy)"/>
+  <rect width="1000" height="250" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="50%" y="70" text-anchor="middle"
+        fill="#e6f7ff"
+        font-size="32"
+        font-weight="700"
+        font-family="Inter, Roboto, Arial, sans-serif"
+        letter-spacing="1px">
+    Ports, Protocols, and Destinations Matrix
+  </text>
+  <line x1="320" y1="90" x2="680" y2="90"
+        stroke="#2da8d8" stroke-width="2" opacity="0.7"/>
+
+  <!-- Network Visualization -->
+  <g transform="translate(0,40)" stroke="url(#glowLine)" stroke-width="1.5" fill="none" opacity="0.9">
+    <!-- Main line -->
+    <path d="M200 160 Q400 80, 600 130 T850 160" />
+  </g>
+
+  <!-- Globe (left) -->
+  <g transform="translate(160,180)" stroke="#6fd3ff" stroke-width="1" fill="none" opacity="0.8">
+    <circle cx="0" cy="0" r="30"/>
+    <path d="M-30 0A30 30 0 0 0 30 0" />
+    <path d="M0 -30A30 30 0 0 1 0 30" />
+    <path d="M-20 -10A30 30 0 0 1 20 -10" />
+  </g>
+
+  <!-- Nodes (endpoints) -->
+  <g fill="#6fd3ff" font-family="monospace" font-size="13" text-anchor="middle">
+    <!-- External IP -->
+    <circle cx="850" cy="180" r="10" fill="#2da8d8" opacity="0.8"/>
+    <text x="850" y="205" fill="#8dd3f7">100.29.147.161</text>
+
+    <!-- Web test -->
+    <circle cx="750" cy="140" r="8" fill="#00bcd4" opacity="0.7"/>
+    <text x="750" y="125" fill="#8dd3f7">www.msftconnecttest.com</text>
+  </g>
+
+  <!-- Port labels -->
+  <g fill="#8dd3f7" font-family="monospace" font-size="12" opacity="0.8">
+    <rect x="490" y="120" width="34" height="18" rx="3" fill="#0a1a25" stroke="#2da8d8" stroke-width="1"/>
+    <text x="507" y="133" text-anchor="middle">443</text>
+
+    <rect x="540" y="160" width="34" height="18" rx="3" fill="#0a1a25" stroke="#2da8d8" stroke-width="1"/>
+    <text x="557" y="173" text-anchor="middle">80</text>
+  </g>
+</svg>
