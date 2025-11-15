@@ -38,11 +38,12 @@
   </g>
 
   <!-- Shield icon (left) -->
-
+  <g transform="translate(72,60)">
+    <path d="M140 12c0 0-64 24-92 44C32 88 36 138 36 138s34 10 52 10 52-6 52-6 36 6 52 6 52-10 52-10 4-50-12-82C260 36 200 12 200 12s-20-6-60 0z"
+          fill="url(#shieldGrad)" stroke="#06344a" stroke-width="2"/>
     
     <!-- Shield inner highlight -->
-    <path d="M140 28c0 0-48 18-68 34-10 8-14 34-14 34s22 6 36 6 42-6 42-6 30 6 42 6 36-6 36-6 0-26-12-46c-10-18-58-28-58-28z"
-          fill="rgba(255,255,255,0.06)"/>
+  
     <!-- Magnifier overlapping -->
     <g transform="translate(140,110) rotate(-20)">
       <circle cx="0" cy="0" r="24" fill="#07121a" stroke="#8dd3f7" stroke-width="4"/>
