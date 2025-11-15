@@ -23,9 +23,6 @@
       <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.45"/>
     </filter>
 
-    <clipPath id="roundClip">
-      <rect x="24" y="24" width="1152" height="252" rx="18" ry="18"/>
-    </clipPath>
   </defs>
 
   <!-- Background card -->
