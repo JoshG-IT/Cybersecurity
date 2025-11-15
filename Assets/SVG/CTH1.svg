@@ -1,54 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
-  <title>Threat Hunt Report — November 8, 2025</title>
+  <title>Threat Hunt Report — November 15, 2025 (Blue Gradient Edition)</title>
 
   <!-- BACKGROUND GRADIENT -->
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#4B0000"/>
-      <stop offset="50%" stop-color="#1A1A1A"/>
-      <stop offset="100%" stop-color="#0D0D0D"/>
+      <stop offset="0%" stop-color="#02121e"/>
+      <stop offset="50%" stop-color="#0a2e3f"/>
+      <stop offset="100%" stop-color="#123e52"/>
     </linearGradient>
 
-    <!-- Faint grid pattern -->
+    <!-- Subtle grid -->
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M40 0H0V40" fill="none" stroke="#2a2a2a" stroke-width="0.5" opacity="0.15"/>
+      <path d="M40 0H0V40" fill="none" stroke="#1b3c50" stroke-width="0.5" opacity="0.15"/>
     </pattern>
 
-    <!-- Circuit path gradient -->
+    <!-- Circuit glow -->
     <linearGradient id="circuit" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#00C9FF" stop-opacity="0.3"/>
+      <stop offset="0%" stop-color="#6fd3ff" stop-opacity="0.4"/>
       <stop offset="100%" stop-color="#00C9FF" stop-opacity="0"/>
     </linearGradient>
   </defs>
 
-  <!-- BACKGROUND LAYERS -->
+  <!-- BACKGROUND -->
   <rect width="1200" height="320" fill="url(#bg)"/>
   <rect width="1200" height="320" fill="url(#grid)"/>
 
-  <!-- BINARY FADE BACKGROUND -->
-  <g fill="#00C9FF" font-family="IBM Plex Mono, monospace" font-size="10" opacity="0.08">
+  <!-- Faint binary background -->
+  <g fill="#00C9FF" font-family="IBM Plex Mono, monospace" font-size="10" opacity="0.06">
     <text x="100" y="60">01010110011010010111001001110101</text>
     <text x="900" y="110">01100100011000010111010001100001</text>
     <text x="200" y="260">01100101011110010110010101110011</text>
     <text x="600" y="220">01000110011010010110110001100101</text>
   </g>
 
-  <!-- CIRCUIT OVERLAY -->
+  <!-- Circuit overlay -->
   <g stroke="url(#circuit)" stroke-width="1.5" fill="none" opacity="0.4">
     <path d="M100 200 L300 150 L400 220 L600 160 L800 210 L1000 140" />
     <path d="M200 100 Q250 140, 300 100 T400 140 T500 100 T600 140" />
   </g>
 
-  <!-- MAGNIFYING GLASS SYMBOL -->
+  <!-- Magnifying glass icon -->
   <g transform="translate(160,140)">
     <circle cx="0" cy="0" r="45" stroke="#00C9FF" stroke-width="3" fill="none" opacity="0.8"/>
-    <circle cx="0" cy="0" r="48" stroke="#00C9FF" stroke-width="1" fill="none" opacity="0.3"/>
-    <circle cx="0" cy="0" r="35" fill="none" stroke="#00C9FF" stroke-width="1.5" opacity="0.5"/>
-    <line x1="32" y1="32" x2="75" y2="75" stroke="#00C9FF" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <circle cx="0" cy="0" r="35" fill="none" stroke="#6fd3ff" stroke-width="1.5" opacity="0.5"/>
+    <line x1="30" y1="30" x2="75" y2="75" stroke="#00C9FF" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
     <rect x="72" y="72" width="25" height="8" rx="3" ry="3" transform="rotate(45 84 76)" fill="#00C9FF" opacity="0.6"/>
   </g>
 
-  <!-- NETWORK GRAPH (behind text) -->
+  <!-- Network dots -->
   <g stroke="#00C9FF" stroke-width="1" opacity="0.25" fill="none">
     <circle cx="500" cy="180" r="4" fill="#00C9FF"/>
     <circle cx="620" cy="140" r="4" fill="#00C9FF"/>
@@ -58,29 +57,27 @@
     <path d="M500 180 L620 140 L720 210 L860 160 L980 200" />
   </g>
 
-  <!-- TITLE TEXT -->
+  <!-- Title -->
   <text x="50%" y="165" text-anchor="middle"
         fill="#E6F7FF"
         font-size="40"
         font-weight="700"
-        font-family="OCR A Std, IBM Plex Mono, monospace"
+        font-family="IBM Plex Mono, monospace"
         letter-spacing="2px">
     Threat Hunt Report
   </text>
 
-  <!-- SUBTEXT -->
+  <!-- Subtext -->
   <text x="50%" y="200" text-anchor="middle"
         fill="#A7D3EA"
         font-size="18"
         font-family="IBM Plex Mono, monospace"
         letter-spacing="1px">
-    November 8, 2025
+    November 15, 2025
   </text>
 
-  <!-- SMALL BRAND WATERMARK (right corner) -->
-  <g opacity="0.06" transform="translate(1080,80)">
+  <!-- Subtle watermark (right corner) -->
+  <g opacity="0.08" transform="translate(1080,80)">
     <circle cx="0" cy="0" r="26" stroke="#00C9FF" stroke-width="2" fill="none"/>
     <circle cx="0" cy="0" r="8" fill="#00C9FF"/>
-    <path d="M-15 0 A15 15 0 0 1 15 0" fill="none" stroke="#00C9FF" stroke-width="1.5"/>
-  </g>
-</svg>
+    <path d="M-15 0 A15 15 0 0 1 15 0" fill="none" strok
