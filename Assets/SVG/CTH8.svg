@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" width="1000" height="250">
+  <title>What Should Be Done — Remediation & Hardening</title>
+
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="cleanBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07131e"/>
+      <stop offset="50%" stop-color="#102c3c"/>
+      <stop offset="100%" stop-color="#0b1f2b"/>
+    </linearGradient>
+
+    <radialGradient id="softLight" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="rgba(90,180,210,0.25)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="250" fill="url(#cleanBlue)"/>
+  <rect width="1000" height="250" fill="url(#softLight)"/>
+
+  <!-- Title -->
+  <text x="50%" y="130" text-anchor="middle"
+        fill="#e6f7ff"
+        font-size="34"
+        font-weight="700"
+        font-family="Inter, Roboto, Arial, sans-serif"
+        letter-spacing="1px">
+    What Should Be Done (Remediation & Hardening)
+  </text>
+
+  <!-- Accent underline -->
+  <line x1="320" y1="150" x2="680" y2="150"
+        stroke="#2da8d8" stroke-width="2" opacity="0.7"/>
+</svg>
