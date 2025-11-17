@@ -68,7 +68,7 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Attribute** | **Details** |
 |----------------|-------------|
 | **Non-Technical Objective** | Find if someone faked security alerts to look legitimate. |
-| **Technical Objective** | Detect staged Defender-related artifacts. |
+| **Technical Objective** | Detect staged artifacts. |
 | **Expected Query** | `DeviceFileEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06) .. datetime(2025-10-11)) \| extend lowerName = tolower(tostring(FileName)) \| where lowerName endswith ".lnk" or lowerName endswith ".txt" \| where ActionType in ("FileCreated","FileOpened","FileModified","FileAccessed") \| summarize hits = dcount(FileName) by FolderPath, InitiatingProcessFileName \| order by hits desc` |
 | **Actual Query Used** | `DeviceFileEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| where ActionType in ("FileCreated","FileOpened","FileModified","FileAccessed") \| summarize hits = dcount(FileName) by FolderPath, InitiatingProcessFileName \| order by hits desc` |
 | **Answer** | `DefenderTamperArtifact.lnk` |
@@ -82,12 +82,12 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Attribute** | **Details** |
 |----------------|-------------|
 | **Non-Technical Objective** | Check if sensitive copied text was viewed. |
-| **Technical Objective** | Identify STA PowerShell clipboard access. |
+| **Technical Objective** | Identify PowerShell clipboard access. |
 | **Expected Query** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| where ProcessCommandLine has_any ("Get-Clipboard") \| project Timestamp, ProcessCommandLine, InitiatingProcessFileName \| order by Timestamp asc` |
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| project Timestamp, FileName, ProcessCommandLine, InitiatingProcessFileName \| order by Timestamp asc` |
 | **Answer** | `"powershell.exe" -NoProfile -Sta -Command "try { Get-Clipboard \| Out-Null } catch { }"` |
 | **Non-Technical Explanation** | The attacker tried to read text copied to the clipboard. |
-| **Technical Explanation** | PowerShell executed with STA mode to silently capture clipboard contents. |
+| **Technical Explanation** | PowerShell executed silently to capture clipboard contents.|
 | **Screenshot** | <img width="1016" height="769" alt="image" src="https://github.com/user-attachments/assets/d18de71a-f8aa-4997-ba33-87cad488d89c" /> |
 
 ---
@@ -96,7 +96,7 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Attribute** | **Details** |
 |----------------|-------------|
 | **Non-Technical Objective** | Determine when the system was last explored. |
-| **Technical Objective** | Detect recon commands like `qwinsta` or `query session`. |
+| **Technical Objective** | Detect recon commands like `query session`. |
 | **Expected Query** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| where ProcessCommandLine has_any ("qwinsta","query session") \| project Timestamp, ProcessCommandLine, InitiatingProcessFileName \| order by Timestamp asc` |
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| project Timestamp, FileName, ProcessCommandLine, ProcessId, ProcessUniqueId, InitiatingProcessFileName \| order by Timestamp asc` |
 | **Answer** | `2025-10-09T12:51:44.3425653Z` |
@@ -110,12 +110,12 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Attribute** | **Details** |
 |----------------|-------------|
 | **Non-Technical Objective** | See if they explored available drives. |
-| **Technical Objective** | Detect disk enumeration and free-space queries. |
+| **Technical Objective** | Detect disk enumeration. |
 | **Expected Query** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| where ProcessCommandLine has_any ("logicaldisk")` |
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe") \| project Timestamp, FileName, ProcessCommandLine, InitiatingProcessFileName, ProcessId, InitiatingProcessId \| order by Timestamp asc` |
 | **Answer** | `"cmd.exe" /c wmic logicaldisk get name,freespace,size"` |
-| **Non-Technical Explanation** | The attacker checked local drives and available storage. |
-| **Technical Explanation** | WMIC command used to assess free space and drive mapping. |
+| **Non-Technical Explanation** | The attacker checked local drives. |
+| **Technical Explanation** | WMIC command used to assess free space. |
 | **Screenshot** | <img width="1012" height="761" alt="image" src="https://github.com/user-attachments/assets/0daa0590-43b6-4a6c-8a68-d58f31311a85" /> |
 
 ---
@@ -129,7 +129,7 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe") \| where ProcessCommandLine has_any ("ping","nslookup")` |
 | **Answer** | `RuntimeBroker.exe` |
 | **Non-Technical Explanation** | The script verified network connectivity. |
-| **Technical Explanation** | PowerShell spawned by RuntimeBroker.exe, suggesting abnormal parent process. |
+| **Technical Explanation** | PowerShell spawned by RuntimeBroker.exe. |
 | **Screenshot** | <img width="780" height="755" alt="image" src="https://github.com/user-attachments/assets/64ed87d0-867f-4175-9ed1-743487fb35e2" /> |
 
 ---
@@ -138,12 +138,12 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Attribute** | **Details** |
 |----------------|-------------|
 | **Non-Technical Objective** | Identify attempts to list who’s logged in. |
-| **Technical Objective** | Find session enumeration commands and the initiating process unique id. |
+| **Technical Objective** | Find session enumeration commands and the unique id. |
 | **Expected Query** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| where ProcessCommandLine has_any ("quser","query session","qwinsta") \| project Timestamp, ProcessUniqueId, InitiatingProcessUniqueId, ProcessCommandLine \| order by Timestamp asc` |
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe") \| where ProcessCommandLine has_any ("query session")` |
 | **Answer** | `2533274790397065` |
 | **Non-Technical Explanation** | The attacker checked which users were active. |
-| **Technical Explanation** | Session enumeration events show the initiating process unique id that links this action to the attacker chain. |
+| **Technical Explanation** | Session enumeration events show the unique id. |
 | **Screenshot** | <img width="697" height="766" alt="image" src="https://github.com/user-attachments/assets/258a5aeb-60fa-4476-a88d-c088a7256f04" /> |
 
 ---
@@ -157,7 +157,7 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe")` |
 | **Answer** | `tasklist.exe` |
 | **Non-Technical Explanation** | The attacker enumerated running programs to see what was active. |
-| **Technical Explanation** | Tasklist was executed (often with /v) by the attacker chain to capture a full view of running processes and owners. |
+| **Technical Explanation** | Tasklist was executed to capture a full view of running processes. |
 | **Screenshot** | <img width="962" height="769" alt="image" src="https://github.com/user-attachments/assets/f755c7d6-9e89-4d12-afca-9dcea64055be" /> |
 
 ---
@@ -171,7 +171,7 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe")` |
 | **Answer** | `2025-10-09T12:52:14.3135459Z` |
 | **Non-Technical Explanation** | The attacker verified their access level right after recon. |
-| **Technical Explanation** | The earliest whoami /groups execution timestamp ties privilege mapping to the malicious PowerShell/cmd chain. |
+| **Technical Explanation** | The earliest whoami /groups execution timestamp indicates this. |
 | **Screenshot** | <img width="695" height="727" alt="image" src="https://github.com/user-attachments/assets/4ac90690-8494-470f-a616-1fcde220c0c7" /> |
 
 ---
@@ -180,12 +180,12 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Attribute** | **Details** |
 |----------------|-------------|
 | **Non-Technical Objective** | Determine if they tested internet reachability. |
-| **Technical Objective** | Identify the first outbound destination contacted during the attacker window. |
+| **Technical Objective** | Identify the first outbound destination contacted. |
 | **Expected Query** | `DeviceNetworkEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| project Timestamp, RemoteUrl, RemoteIP, InitiatingProcessFileName, InitiatingProcessCommandLine \| order by Timestamp asc` |
 | **Actual Query Used** | `DeviceNetworkEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe")` |
 | **Answer** | `www.msftconnecttest.com` |
-| **Non-Technical Explanation** | A connectivity probe to a Microsoft test domain confirmed outbound reachability. |
-| **Technical Explanation** | The attacker used a lightweight HTTP call (msftconnecttest) as a proof-of-egress before attempting larger transfers. |
+| **Non-Technical Explanation** | A connection test to a Microsoft test domain confirmed outbound access. |
+| **Technical Explanation** | The attacker used a HTTP call (msftconnecttest) as a test before moving forward. |
 | **Screenshot** | <img width="1177" height="759" alt="image" src="https://github.com/user-attachments/assets/6aefe8ef-7e97-499b-a2a1-a990f9c4935e" />|
 
 ---
@@ -208,12 +208,12 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Attribute** | **Details** |
 |----------------|-------------|
 | **Non-Technical Objective** | See if the tool tried to send files out. |
-| **Technical Objective** | Detect suspicious outbound connections initiated by attacker-controlled processes. |
+| **Technical Objective** | Detect suspicious outbound connections initiated by the attacker |
 | **Expected Query** | `DeviceNetworkEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| project Timestamp, RemoteIP, RemoteUrl, InitiatingProcessFileName \| order by Timestamp asc` |
 | **Actual Query Used** | `DeviceNetworkEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01)..datetime(2025-10-15)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe")` |
 | **Answer** | `100.29.147.161` |
-| **Non-Technical Explanation** | The host attempted an outbound connection to an unusual external IP (simulated exfil target). |
-| **Technical Explanation** | The last suspicious outbound IP observed from attacker processes was 100.29.147.161 (httpbin/http upload test behavior). |
+| **Non-Technical Explanation** | The host attempted an outbound connection to an unusual external IP. |
+| **Technical Explanation** | The last suspicious outbound IP observed from attacker processes was 100.29.147.161. |
 | **Screenshot** | <img width="950" height="712" alt="image" src="https://github.com/user-attachments/assets/b7f9f3ec-56a0-4aca-ad24-b585eaf10a40" /> |
 
 ---
@@ -250,7 +250,7 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 ### Flag 15 - Planted Narrative / Cover Artifact
 | **Attribute** | **Details** |
 |----------------|-------------|
-| **Non-Technical Objective** | Detect fake logs or cover stories. |
+| **Non-Technical Objective** | Detect fake logs or cover artifacts to divert attention. |
 | **Technical Objective** | Identify planted user-facing files created after suspicious operations. |
 | **Expected Query** | `DeviceFileEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06) .. datetime(2025-10-11)) \| extend lowerName = tolower(tostring(FileName)), lowerPath = tolower(tostring(FolderPath)) \| where ActionType in ("FileCreated","FileModified","FileOpened","FileAccessed") \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe","explorer.exe") \| project Timestamp, FileName, FolderPath, ActionType, InitiatingProcessFileName \| order by Timestamp asc` |
 | **Actual Query Used** | `DeviceFileEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-01) .. datetime(2025-10-15)) \| where ActionType in ("FileCreated","FileModified","FileOpened","FileAccessed") \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe","explorer.exe") ` |
