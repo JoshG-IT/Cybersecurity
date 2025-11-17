@@ -3,7 +3,6 @@
 </p>
 
 # Support Session Misdirection
-# November 15, 2025  
 
 **Hunter:** Josh G.
 
