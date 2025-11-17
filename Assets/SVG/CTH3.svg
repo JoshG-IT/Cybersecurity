@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200" width="1200" height="200" role="img" aria-labelledby="title">
-  <title id="title">Technical Summary — Analyst View</title>
-
+  <title id="title">Technical Summary/title>
+  
   <!-- Gradients -->
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -51,9 +51,4 @@
     <rect x="380" y="0" width="140" height="24" rx="4" fill="#1b3a47"/>
     <text x="450" y="16" text-anchor="middle" fill="#00ffc6" font-family="Inter, sans-serif" font-size="13" font-weight="600">Exfiltration</text>
   </g>
-
-  <!-- Title -->
-  <text x="50%" y="190" text-anchor="middle" fill="#b0f0e0" font-family="Inter, Roboto, Arial, sans-serif" font-size="20" font-weight="700">
-    Technical Summary — Analyst View
-  </text>
 </svg>
