@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" width="1000" height="250">
-  <title>Flags 1–15 Evidence Tables — Gradient Header</title>
+  <title>Flags 1–15 — Gradient Header</title>
 
   <!-- Gradient background -->
   <defs>
@@ -27,7 +27,7 @@
         font-weight="700"
         font-family="Inter, Roboto, Arial, sans-serif"
         letter-spacing="1px">
-    Flags 1–15 Evidence Tables
+    Flags 1–15
   </text>
 
   <!-- Subtle underline accent -->
