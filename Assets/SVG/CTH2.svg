@@ -30,15 +30,6 @@
     Non-Technical Summary
   </text>
 
-  <!-- Subtitle -->
-  <text x="50%" y="150" text-anchor="middle"
-        fill="#a7d3ea"
-        font-size="18"
-        font-weight="400"
-        font-family="Inter, Roboto, Arial, sans-serif">
-    Storytelling for Everyone
-  </text>
-
   <!-- Underline accent -->
   <line x1="360" y1="165" x2="640" y2="165"
         stroke="#2da8d8" stroke-width="2" opacity="0.7"/>
