@@ -25,7 +25,7 @@ These are the only data sources used in this KPI sheet:
 
 ---
 
-# WEEK 1 — 2025-01-10
+# WEEK 1 - 2025-01-10
 
 | Incident ID | Event Time | Detection Time | Alert / Hunt Name | Source | Type | MTTD | MTTR | Notes | Disposition | Evidence |
 |-------------|------------|----------------|--------------------|--------|------|------|------|--------|-------------|----------|
@@ -36,7 +36,7 @@ These are the only data sources used in this KPI sheet:
 
 ---
 
-# WEEK 2 — 2025-01-17
+# WEEK 2 - 2025-01-17
 
 | Incident ID | Event Time | Detection Time | Alert / Hunt Name | Source | Type | MTTD | MTTR | Notes | Disposition | Evidence |
 |-------------|------------|----------------|--------------------|--------|------|------|------|--------|-------------|----------|
@@ -47,7 +47,7 @@ These are the only data sources used in this KPI sheet:
 
 ---
 
-# WEEK 3 — 2025-01-24
+# WEEK 3 - 2025-01-24
 
 | Incident ID | Event Time | Detection Time | Alert / Hunt Name | Source | Type | MTTD | MTTR | Notes | Disposition | Evidence |
 |-------------|------------|----------------|--------------------|--------|------|------|------|--------|-------------|----------|
@@ -58,7 +58,7 @@ These are the only data sources used in this KPI sheet:
 
 ---
 
-# WEEK 4 — 2025-01-31
+# WEEK 4 - 2025-01-31
 
 | Incident ID | Event Time | Detection Time | Alert / Hunt Name | Source | Type | MTTD | MTTR | Notes | Disposition | Evidence |
 |-------------|------------|----------------|--------------------|--------|------|------|------|--------|-------------|----------|
