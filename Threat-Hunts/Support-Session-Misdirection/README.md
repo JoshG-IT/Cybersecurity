@@ -113,7 +113,7 @@ After enumeration, the attacker archived data into **C:\Users\Public\ReconArtifa
 | **Technical Objective** | Detect disk enumeration. |
 | **Expected Query** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| where ProcessCommandLine has_any ("logicaldisk")` |
 | **Actual Query Used** | `DeviceProcessEvents \| where DeviceName == "gab-intern-vm" \| where Timestamp between (datetime(2025-10-06)..datetime(2025-10-11)) \| where InitiatingProcessFileName in ("powershell.exe","cmd.exe") \| project Timestamp, FileName, ProcessCommandLine, InitiatingProcessFileName, ProcessId, InitiatingProcessId \| order by Timestamp asc` |
-| **Answer** | `"cmd.exe" /c wmic logicaldisk get name,freespace,size"` |
+| **Answer** | `"cmd.exe" /c wmic logicaldisk get name,freespace,size` |
 | **Non-Technical Explanation** | The attacker checked local drives. |
 | **Technical Explanation** | WMIC command used to assess free space. |
 | **Screenshot** | <img width="1012" height="761" alt="image" src="https://github.com/user-attachments/assets/0daa0590-43b6-4a6c-8a68-d58f31311a85" /> |
