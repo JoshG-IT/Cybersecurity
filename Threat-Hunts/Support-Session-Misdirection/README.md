@@ -1,6 +1,5 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/JoshG-IT/Cybersecurity/e860def66560739a0b007f98125776d8f1208720/Assets/SVG/CTH1.svg" width="800" alt="Threat Hunt Report Title"/>
-  <img src="https://github.com/JoshG-IT/Cybersecurity/blob/f5e5ffc5cb844cc78f544da6862c8e012afad7be/Assets/SVG/blablablah.svg" width="800" alt="BlaBlaBlah"/>
 </p>
 
 # Support Session Misdirection
