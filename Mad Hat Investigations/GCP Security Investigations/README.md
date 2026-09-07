@@ -1,6 +1,6 @@
-# AWS Security Investigations
+# GCP Security Investigations
 
-Hands-on AWS security investigations completed through the Mad Hat.
+Hands-on Google Cloud security investigations completed through the Mad Hat.
 
 **Status:** ⏳ Pending
 
