@@ -1,6 +1,6 @@
 # Azure Security Investigations
 
-Hands-on Microsoft Azure security investigations completed through the Mad Hat Skool community in a live multi-user Azure training tenant.
+Hands-on Microsoft Azure security investigations completed through Mad Hat in a live multi-user Azure training tenant.
 
 Each case represents the concluding hands-on investigation for a major Azure security domain.
 
