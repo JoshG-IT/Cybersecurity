@@ -1,19 +1,45 @@
 # Azure Governance Investigation
 ## Operation Dead Deploy
 
-> Investigated unexpected Azure resource provisioning in a **live multi-user Azure training tenant** and traced why an active naming policy detected a violation without preventing deployment.
+> Investigated a non-compliant Azure deployment in a **live multi-user Azure training tenant**, reconstructed the ARM deployment trail, and identified why an active naming policy detected the violation without preventing resource creation.
 
-![Azure Governance Investigation Architecture](diagrams/azure-governance-investigation.png)
+[ARCHITECTURE IMAGE HERE - `diagrams/azure-governance-investigation.png`]
+
+> **Scope note:** The architecture diagram represents only the identities, resources, deployment artifacts, and governance controls relevant to this investigation. Other resources in the shared training subscription are intentionally omitted.
+
+---
 
 ## Executive Summary
 
-A resource governance review was performed after an unexpected Azure resource group was identified in a shared training subscription. Using primarily **Azure CLI**, I enumerated the environment, inspected the deployed resource and its metadata, reconstructed the Azure Resource Manager (ARM) deployment, and reviewed Azure Policy compliance.
+This project documents a read-only Azure governance investigation performed in a live multi-user training tenant.
 
-The investigation determined that the naming control was functioning as configured: the resource group was evaluated as **NonCompliant**, but the applicable policy effect was **Audit**. Audit records a policy violation but does not block resource creation.
+The lab itself was designed around the Azure Portal. I extended the exercise by using **Azure CLI as the primary investigation interface for Stages 1 through 3**:
 
-Stages 1 through 3 were completed with Azure CLI. During Stage 4, Azure CLI successfully exposed policy state, the policy definition, compliance state, and effective action, but direct retrieval of the subscription-level policy assignment was blocked by RBAC. The final assignment review was therefore completed in the Azure Portal.
+1. identify the naming outlier,
+2. inspect the deployed resource and its tags,
+3. trace the ARM deployment.
 
-> **Training Environment Note:** This project documents work performed in a live multi-user Azure training tenant. It does not represent production access.
+For Stage 4, I continued with Azure CLI and successfully reached the policy state and custom policy definition. A direct request for the subscription-level policy assignment then failed with `AuthorizationFailed` for `Microsoft.Authorization/policyAssignments/read`. I completed the final assignment review in the **Azure Portal**, where the assignment showed an **Audit** effect.
+
+The root cause was therefore not a failed Azure Policy engine. Azure Policy detected the violation, but the control was configured in **Audit** mode, which records non-compliance without blocking creation.
+
+> **Environment disclosure:** This was a live multi-user Azure **training tenant**, not a production environment. Challenge answers and environment-specific identifiers are intentionally excluded from the public write-up.
+
+---
+
+## Scenario
+
+A junior intern with temporary Contributor access provisioned a test environment that did not follow the expected resource-group naming convention.
+
+My task was to determine:
+
+- **Who** performed the provisioning?
+- **What** was created?
+- **When** did the deployment occur?
+- **Where** was the resource deployed?
+- **Why** did governance detect the violation but still allow the deployment?
+
+The investigation was performed in **observe mode**. No resources were changed, remediated, or deleted.
 
 ---
 
@@ -21,27 +47,16 @@ Stages 1 through 3 were completed with Azure CLI. During Stage 4, Azure CLI succ
 
 | Component | Details |
 |---|---|
-| Platform | Microsoft Azure |
+| Cloud platform | Microsoft Azure |
 | Environment | Live multi-user Azure training tenant |
 | Investigation access | Reader |
-| Provisioning role in scenario | Temporary Contributor |
+| Scenario provisioning access | Temporary Contributor |
 | Primary investigation tool | Azure CLI |
-| Secondary tools | Azure PowerShell, Azure Portal |
-| Governance | Azure Policy |
-| Deployment evidence | Azure Resource Manager deployment history |
-| Compliance evidence | Azure Policy / Policy Insights |
-| Investigation mode | Read-only / observe mode |
-
----
-
-## Investigation Objectives
-
-- Identify the resource group that violated the expected naming standard.
-- Determine what resource was deployed and review its metadata.
-- Trace the provisioning event through ARM deployment history.
-- Determine whether Azure Policy evaluated the non-compliant resource.
-- Identify why the governance control detected the violation but did not prevent the deployment.
-- Document investigation limitations caused by RBAC.
+| Stage 4 final review | Azure Portal |
+| Secondary validation | Azure PowerShell |
+| Provisioning evidence | Azure Resource Manager deployment history |
+| Governance evidence | Azure Policy / Policy Insights |
+| Investigation mode | Read-only |
 
 ---
 
@@ -49,211 +64,213 @@ Stages 1 through 3 were completed with Azure CLI. During Stage 4, Azure CLI succ
 
 ## 1. Resource Group Discovery
 
-I began at the subscription level and enumerated resource groups using Azure CLI. Most resource groups followed the expected `rg-` naming pattern. One resource group clearly broke that convention and became the focus of the investigation.
+I first reviewed the Azure CLI resource-group command family, then enumerated resource groups in the subscription.
 
 ```powershell
+az group --help
 az group list -o table
 ```
 
-**Evidence**
+Most resource groups followed an `rg-` naming pattern. One resource group did not follow that pattern and became the investigation target.
 
-> [SCREENSHOT HERE - `evidence/01-resource-group-discovery.png`]  
-> Redact the Stage 1 resource-group answer. Replace it visually with `[REDACTED - NAMING OUTLIER]`.  
-> Redact the operative-specific resource-group name or any unique operative identifier.  
-> Keep several normal `rg-*` resource-group names visible so the naming pattern is obvious.  
-> Keep Location and Status visible.
+> **[SCREENSHOT HERE - rename to `evidence/01-resource-group-discovery.png`]**  
+> **REDACT:** the Stage 1 resource-group answer, the full operative-specific resource-group name/ID, and any other full environment-specific resource-group names you do not want public.  
+> **KEEP:** `az group --help`, `az group list -o table`, enough `rg-` prefixes to establish the naming pattern, Location, and Status.
 
-**Conclusion:** A naming anomaly was identifiable through subscription-level resource inventory and pattern matching.
+**What I concluded:** subscription-level inventory and naming-pattern analysis were sufficient to identify the outlier.
 
 ---
 
 ## 2. Resource Inspection and Tags
 
-After isolating the suspicious resource group, I enumerated its contents and confirmed that it contained a single Azure Storage account.
+After identifying the suspicious resource group, I inspected the resources currently present in that group.
 
 ```powershell
-az resource list \
-  --resource-group <REDACTED_RESOURCE_GROUP> \
-  --query "[].{Name:name,Type:type,Location:location,Tags:tags}" \
+az resource list `
+  -g <RESOURCE_GROUP> `
   -o json
 ```
 
-The resource metadata showed that tags were present, but some values were not operationally useful. The challenge-specific tag value is intentionally excluded from this repository.
+The output showed one resource:
 
-**Evidence**
+- Type: `Microsoft.Storage/storageAccounts`
+- Kind: `StorageV2`
+- Location: `eastus`
+- Provisioning state: `Succeeded`
+- SKU: `Standard_LRS`
 
-> [SCREENSHOT HERE - `evidence/02-resource-tags-redacted.png`]  
-> Redact the storage-account name if it is challenge-specific or uniquely identifies the lab resource.  
-> Redact the `intern-flag` value completely and show `[REDACTED]`.  
-> Redact the owner value if it identifies the lab user or environment.  
-> Keep safe metadata such as `environment: unknown` and `cost-center: unspecified` visible.
+The same result also exposed the resource tags, including `cost-center`, `environment`, `intern-flag`, and `owner`.
 
-**Conclusion:** Resource tags can provide useful investigation context, but the presence of tags alone does not guarantee meaningful governance metadata.
+> **[SCREENSHOT HERE - rename to `evidence/02-resource-inventory-tags.png`]**  
+> **REDACT:** subscription ID, Stage 1 resource-group answer, storage-account name, full resource ID/path, `intern-flag` value, `owner` value, and any other challenge-specific identifiers.  
+> **KEEP:** `Microsoft.Storage/storageAccounts`, `StorageV2`, `eastus`, `Succeeded`, `Standard_LRS`, tag keys, `cost-center: unspecified`, and `environment: unknown`.
+
+**What I concluded:** the resource group contained a single Azure Storage account, and the live resource metadata exposed the tags required for Stage 2.
 
 ---
 
 ## 3. ARM Deployment Reconstruction
 
-I reviewed the resource group's ARM deployment history to determine how the resource was provisioned.
+I then moved from **current state** to **deployment history**.
+
+### Deployment parameters
 
 ```powershell
-az deployment group list \
-  --resource-group <REDACTED_RESOURCE_GROUP> \
-  -o table
-```
-
-The deployment record showed:
-
-| Property | Observed |
-|---|---|
-| Provisioning state | Succeeded |
-| Deployment mode | Incremental |
-| Region | East US |
-| Deployment timestamp | Preserved in evidence |
-| Workload resource | Azure Storage account |
-
-I then reviewed the deployment parameters and output resources to understand the deployment context.
-
-```powershell
-az deployment group show \
-  --resource-group <REDACTED_RESOURCE_GROUP> \
-  --name <REDACTED_DEPLOYMENT_NAME> \
+az deployment group show `
+  -g <RESOURCE_GROUP> `
+  -n <DEPLOYMENT_NAME> `
   --query properties.parameters
 ```
 
-**Evidence**
+The deployment parameters included:
 
-> [SCREENSHOT HERE - `evidence/03-deployment-history-redacted.png`]  
-> Redact the Stage 3 deployment-name answer.  
-> Redact the Stage 1 resource-group answer.  
-> Keep State, Timestamp, Mode, and Region visible.
+- `internFlag`
+- `location`
+- `operativesGroupId`
 
-> [SCREENSHOT HERE - `evidence/04-deployment-parameters-redacted.png`]  
-> Redact the challenge flag value.  
-> Redact GUID values such as group/object identifiers.  
-> Redact the resource-group and deployment answers if visible in the command line.  
-> Keep parameter names, parameter types, and safe values such as `eastus` visible.
+> **[SCREENSHOT HERE - rename to `evidence/03-deployment-parameters.png`]**  
+> **REDACT:** Stage 1 resource-group answer, Stage 3 deployment name, `internFlag` value, `operativesGroupId` value, and any GUIDs.  
+> **KEEP:** parameter names, parameter types, and `location: eastus`.
 
-**Conclusion:** ARM deployment history provided the provisioning record needed to reconstruct how the resource appeared in the environment.
-
----
-
-## 4. Governance Analysis
-
-Azure Policy state was queried from the affected resource-group scope.
+### Deployment history
 
 ```powershell
-az policy state list \
-  -g <REDACTED_RESOURCE_GROUP> \
+az deployment group list `
+  -g <RESOURCE_GROUP> `
   -o table
 ```
 
-The relevant policy evaluation showed:
+The deployment record showed a successful **Incremental** deployment and provided the deployment timestamp.
 
-- **Compliance:** `NonCompliant`
-- **Effective action:** `audit`
-- **Location:** East US
+> **[SCREENSHOT HERE - rename to `evidence/04-deployment-history.png`]**  
+> **REDACT:** Stage 1 resource-group answer and Stage 3 deployment-name answer.  
+> **KEEP:** `Succeeded`, the Timestamp column/value, and `Incremental`.
 
-I then traced the evaluation to the custom naming policy definition.
-
-```powershell
-az policy definition show \
-  --name <REDACTED_POLICY_DEFINITION_ID>
-```
-
-The policy definition established that:
-
-- It was a custom **Naming Convention** policy.
-- It evaluated resource groups.
-- Resource-group names were expected to match `rg-*`.
-- The effect was parameterized and supported `Audit`, `Deny`, or `Disabled`.
-
-`rg-*` is intentionally left visible because it is the technical naming rule being evaluated, not a challenge answer or sensitive identifier.
-
-**Evidence**
-
-> [SCREENSHOT HERE - `evidence/05-policy-state-cli-redacted.png`]  
-> Redact policy-definition GUIDs, assignment GUIDs, subscription IDs, and resource-group answers.  
-> Keep `NonCompliant`, `audit`, and `eastus` visible.  
-> Prefer a tightly cropped screenshot showing only the relevant policy-state result.
-
-> [SCREENSHOT HERE - `evidence/06-policy-definition-cli-redacted.png`]  
-> Redact the subscription ID.  
-> Redact the policy-definition GUID.  
-> Redact creator IDs, usernames, and tenant-domain email addresses.  
-> Keep `Naming Convention`, `Audit`, `Deny`, `Disabled`, `All`, `Custom`, and `rg-*` visible.
+**What I concluded:** ARM deployment history provided a traceable provisioning record separate from the resource's current-state inventory.
 
 ---
 
-## 5. Stage 4 RBAC Constraint
+## 4. Azure Policy State
 
-Azure CLI successfully exposed the policy evaluation, the definition, the assignment identifier, the assignment scope, and the effective action. However, direct retrieval of the subscription-level policy assignment object failed because the Reader-scoped lab identity did not have:
+Next, I queried policy evaluation data for the affected resource group.
+
+```powershell
+az policy state list `
+  -g <RESOURCE_GROUP> `
+  -o table `
+  --query "[].{PolicyReference:policyDefinitionReferenceId, PolicyName:policyDefinitionName, Compliance:complianceState, ActionPerPolicy:policyDefinitionAction, Location:resourceLocation}"
+```
+
+The result contained multiple policy evaluations. The naming-policy record was `NonCompliant` with an effective action of `audit`.
+
+> **[SCREENSHOT HERE - rename to `evidence/05-policy-state-cli.png`]**  
+> **REDACT:** Stage 1 resource-group answer in the command, PolicyReference values, PolicyName/GUID values, policy/assignment identifiers, and other environment-specific IDs.  
+> **KEEP:** Compliance, ActionPerPolicy, Location, `NonCompliant`, `audit`, and `eastus`.
+
+**What I concluded:** Azure Policy was evaluating the resource. The violation was being detected rather than ignored.
+
+---
+
+## 5. Naming Convention Policy Definition
+
+I traced the relevant policy state to the custom policy definition.
+
+```powershell
+az policy definition show `
+  --name <POLICY_DEFINITION_ID>
+```
+
+The JSON showed:
+
+- `displayName`: `Naming Convention`
+- `mode`: `All`
+- `policyType`: `Custom`
+- effect parameter allowed values: `Audit`, `Deny`, `Disabled`
+- default effect value: `Audit`
+- resource type condition: `Microsoft.Resources/subscriptions/resourceGroups`
+- resource-group name condition: `notLike: "rg-*"`
+
+> **[SCREENSHOT HERE - rename to `evidence/06-policy-definition-cli.png`]**  
+> **REDACT:** policy-definition ID in the command, subscription ID, policy-definition GUIDs, `createdBy` GUID, creator email/username, and other environment-specific IDs.  
+> **KEEP:** `Naming Convention`, `All`, `Custom`, `Audit`, `Deny`, `Disabled`, the resource-group type condition, and `rg-*`.
+
+`rg-*` is intentionally safe to keep because it is the technical policy rule being evaluated, not a challenge flag or tenant identifier.
+
+**What I concluded:** the custom policy definition was capable of detecting the resource-group naming violation.
+
+---
+
+## 6. Azure PowerShell Validation
+
+Azure CLI remained my primary investigation interface, but I also validated the same policy definition with Azure PowerShell.
+
+```powershell
+Get-AzPolicyDefinition -Name <POLICY_DEFINITION_ID>
+```
+
+The PowerShell output confirmed:
+
+- DisplayName: `Naming Convention`
+- Mode: `All`
+- PolicyType: `Custom`
+- Version: `1.0.0`
+
+> **[SCREENSHOT HERE - rename to `evidence/07-policy-definition-powershell.png`]**  
+> **REDACT:** policy-definition ID in the command, subscription ID, definition GUID, `createdBy`, `SystemDataCreatedBy`, `SystemDataLastModifiedBy`, usernames/emails, and other identifying values.  
+> **KEEP:** DisplayName, Mode, PolicyType, Type, and Version.
+
+**What I concluded:** Azure PowerShell independently exposed the same policy definition, confirming the CLI finding.
+
+---
+
+## 7. Policy Assignment RBAC Boundary
+
+The policy state led me to the subscription-level policy assignment, so I attempted to read it directly with Azure CLI.
+
+```powershell
+az policy assignment show `
+  --name <POLICY_ASSIGNMENT_NAME>
+```
+
+The request failed with:
 
 ```text
+AuthorizationFailed
 Microsoft.Authorization/policyAssignments/read
 ```
 
-I validated this behavior with Azure CLI, Azure PowerShell, Azure Resource Graph, and a direct ARM REST request. The compliance data remained readable while the underlying assignment object could not be retrieved directly.
+> **[SCREENSHOT HERE - rename to `evidence/08-policy-assignment-rbac-failure.png`]**  
+> **REDACT:** policy-assignment name in the command, operative username/email, object ID, subscription ID, policy-assignment ID/path, and all GUIDs.  
+> **KEEP:** `AuthorizationFailed`, `Microsoft.Authorization/policyAssignments/read`, `does not have authorization to perform action`, and `Code: AuthorizationFailed`.
 
-Because the lab's final evidence was stored on the policy assignment, I completed that portion of the investigation in the Azure Portal.
-
-**Evidence**
-
-> [SCREENSHOT HERE - `evidence/07-policy-assignment-portal-redacted.png`]  
-> Redact the policy Description value because it contains the Stage 4 challenge answer.  
-> Redact Assignment ID and subscription ID.  
-> Keep `Naming Convention`, Scope, Definition type, Policy enforcement, Parameter name `Effect`, and Parameter value `Audit` visible.
-
-> [SCREENSHOT HERE - `evidence/08-rbac-boundary-redacted.png`]  
-> Redact username/email, object ID, subscription ID, assignment ID, and any tenant-specific identifier.  
-> Keep `AuthorizationFailed` and `Microsoft.Authorization/policyAssignments/read` visible.
-
-**Conclusion:** The investigation exposed an important distinction between visibility into **policy compliance state** and permission to read the underlying **policy assignment object**.
+**What I concluded:** this was an RBAC authorization boundary, not a malformed Azure CLI command.
 
 ---
 
-# Root Cause
+## 8. Policy Assignment Review in Azure Portal
 
-> **Azure Policy detected the naming violation correctly. The governance control did not prevent provisioning because the effective policy action was configured as `Audit` rather than a preventive `Deny` effect.**
+Because the direct assignment read was blocked, I completed the final Stage 4 review in the Azure Portal.
 
-| Effect | Behavior |
-|---|---|
-| `Audit` | Allows the request and records non-compliance |
-| `Deny` | Rejects the non-compliant request |
+The assignment view showed:
 
-The policy itself was not malfunctioning. The control was configured for **detective monitoring** rather than **preventive enforcement**.
+- Name: `Naming Convention`
+- Scope: `Mad Hat Labs`
+- Definition type: `Policy`
+- Policy enforcement: `Default`
+- Parameter name: `Effect`
+- Parameter value: `Audit`
 
----
+> **[SCREENSHOT HERE - rename to `evidence/09-policy-assignment-portal.png`]**  
+> **REDACT:** the Description value because it contains the Stage 4 challenge answer, subscription ID, Assignment ID/path, and any other environment-specific identifiers.  
+> **KEEP:** `Naming Convention`, `Mad Hat Labs` scope label, Definition type, Policy enforcement, `Effect`, and `"Audit"`.
 
-# Key Findings
-
-1. A resource group was successfully provisioned outside the expected naming convention.
-2. The deployed workload consisted of a single Azure Storage account.
-3. ARM deployment history confirmed a successful Incremental deployment.
-4. Azure Policy detected the naming violation and marked the resource group `NonCompliant`.
-5. The effective policy action was `Audit`, which recorded the violation without blocking creation.
-6. Reader-level access exposed policy compliance evidence but did not permit direct reading of the subscription-level policy assignment object.
+**What I concluded:** the assignment was configured with an `Audit` effect.
 
 ---
 
-# Recommendations
+# What Broke / What Surprised Me
 
-| Priority | Recommendation | Rationale |
-|---|---|---|
-| High | Evaluate moving the naming policy from `Audit` to `Deny` after impact testing | Converts the control from detective to preventive |
-| High | Review temporary Contributor assignments | Reduces unnecessary provisioning capability |
-| Medium | Use time-bound privileged access where available | Limits how long elevated access remains active |
-| Medium | Enforce approved tag values, not only tag presence | Improves ownership, lifecycle, environment, and cost metadata |
-| Medium | Document intentional Audit-mode exceptions | Prevents temporary monitoring configurations from becoming permanent |
-| Medium | Monitor Azure Policy compliance continuously | Helps detect governance drift and non-compliant provisioning |
-
-> A move from `Audit` to `Deny` should be tested before enforcement so legitimate workloads are not unexpectedly blocked.
-
----
-
-# Investigation Challenge
-
-The most important troubleshooting lesson was that the Azure Portal presented policy compliance as a unified experience, while Azure CLI exposed separate Azure Policy objects:
+The most useful troubleshooting lesson was that the Azure Portal made policy compliance feel like one workflow, while Azure CLI exposed separate Azure Policy objects that had to be correlated.
 
 ```text
 Policy Definition
@@ -263,32 +280,80 @@ Policy Assignment
 "Where and how is it applied?"
         ↓
 Policy State
-"What happened when the resource was evaluated?"
+"What happened when Azure evaluated the resource?"
 ```
 
-I initially expected Reader-level access to allow direct retrieval of the assignment because the Portal displayed related compliance information. Instead, the investigation showed that policy state could be queried while direct policy-assignment reads were restricted by RBAC.
+I could query policy state and read the custom policy definition, but a direct policy-assignment read failed because the Reader identity lacked:
+
+```text
+Microsoft.Authorization/policyAssignments/read
+```
+
+That forced me to distinguish between **visibility into compliance results** and **permission to read the underlying assignment object**.
+
+---
+
+# Findings and Recommendations
+
+## Root Cause
+
+> **Azure Policy detected the naming violation correctly. The deployment remained possible because the applicable policy effect was `Audit`, not the preventive `Deny` effect.**
+
+| Effect | Result |
+|---|---|
+| `Audit` | Records non-compliance while allowing the request |
+| `Deny` | Rejects the non-compliant request |
+
+The policy engine was not broken. The governance control was configured for **detective monitoring** rather than **preventive enforcement**.
+
+## Recommendations
+
+| Priority | Recommendation | Reason |
+|---|---|---|
+| High | Evaluate changing the naming policy from `Audit` to `Deny` after testing | Converts the control from detective to preventive |
+| High | Review the scope and duration of temporary Contributor access | Reduces unnecessary provisioning capability |
+| Medium | Use time-bound elevated access where supported | Limits the exposure window for privileged roles |
+| Medium | Enforce meaningful tag values at deployment time | Improves ownership, environment, lifecycle, and cost metadata |
+| Medium | Document intentional Audit-mode exceptions | Prevents temporary monitoring configurations from becoming permanent |
+| Medium | Monitor policy compliance continuously | Helps identify governance drift and recurring violations |
+
+> A move from `Audit` to `Deny` should be tested before enforcement so legitimate workloads are not unexpectedly blocked.
+
+---
+
+# 5 W's at a Glance
+
+| Question | Answer |
+|---|---|
+| **Who** | Junior intern with temporary Contributor access |
+| **What** | A non-compliant resource group containing one Azure Storage account |
+| **When** | Identified through the ARM deployment timestamp |
+| **Where** | Mad Hat Labs training subscription, resource located in East US |
+| **Why** | The naming policy used `Audit`, which detected the violation but did not block creation |
 
 ---
 
 # What I Learned
 
+- Azure CLI can be used to move from resource discovery to deployment tracing and policy analysis.
+- `az resource list` shows the resource's **current state**, while `az deployment group show` exposes **deployment-time inputs**.
 - Azure Policy definitions, assignments, and policy states are separate objects.
-- `Audit` is a detective policy effect; `Deny` is preventive.
-- Azure CLI can quickly expose resource inventory, metadata, ARM deployment history, and policy state.
-- ARM deployment history provides valuable evidence when reconstructing provisioning events.
-- Tags are only useful when their values are governed and operationally meaningful.
-- RBAC can allow visibility into compliance results while restricting direct access to the underlying governance object.
-- Portal views can aggregate information from multiple backend objects, so reproducing a Portal view in CLI may require tracing several APIs or resource types.
+- `Audit` is detective; `Deny` is preventive.
+- JMESPath projections make large Azure CLI results easier to investigate.
+- ARM deployment history provides useful control-plane evidence for reconstructing provisioning events.
+- RBAC can allow policy-compliance visibility while restricting direct reads of the underlying policy assignment.
+- Azure Portal views may aggregate data from several backend objects, so reproducing the same investigation through CLI can require multiple commands.
 
 ---
 
 # Technical Drill-Down
 
-For the detailed investigation methodology, commands, troubleshooting, and evidence mapping:
+For the deeper technical material:
 
 - [Full Investigation Report](docs/investigation-report.md)
 - [Technical Analysis](docs/technical-analysis.md)
 - [Evidence Register](docs/evidence-register.md)
+- [Screenshot Redaction Guide](docs/redaction-guide.md)
 - [Azure CLI Commands](queries/azure-cli.md)
 - [Azure PowerShell Commands](queries/azure-powershell.md)
 
@@ -303,35 +368,32 @@ For the detailed investigation methodology, commands, troubleshooting, and evide
 - Azure Resource Manager
 - Azure Policy
 - Azure Policy Insights
-- Azure Resource Graph
 - Azure RBAC
 - JMESPath
 - PowerShell
 
 ---
 
-# Data Handling and Disclosure
+# Data Handling
 
-Challenge answers and sensitive training-environment identifiers are intentionally excluded.
+This repository intentionally documents the **investigation method and reasoning**, not the course answer key.
 
-Redacted information includes:
+The following are redacted from public screenshots:
 
-- Challenge flags
-- Stage-answer resource and deployment names
-- Tenant IDs
-- Subscription IDs
-- Usernames and email addresses
-- Operative identifiers
-- Object IDs
-- Policy-definition GUIDs
-- Policy-assignment GUIDs
-- Group GUIDs
-- Other environment-specific identifiers
-
-This repository documents **investigation methodology, evidence, and reasoning**, not the course answer key.
+- `MadHat{...}` challenge values
+- Stage 1 resource-group answer
+- Stage 3 deployment-name answer
+- Stage 4 Description value
+- usernames and email addresses
+- operative identifiers
+- tenant and subscription IDs
+- object/group IDs
+- policy-definition GUIDs
+- policy-assignment GUIDs
+- resource names and IDs where they expose environment-specific information
 
 ---
 
-## Resume Summary
+## Resume Line
 
 > Investigated unexpected Azure resource provisioning in a live multi-user training tenant using Azure CLI, Azure PowerShell, ARM deployment history, and Azure Policy; traced a naming-control violation to an Audit-mode governance configuration that detected non-compliance without preventing deployment.
