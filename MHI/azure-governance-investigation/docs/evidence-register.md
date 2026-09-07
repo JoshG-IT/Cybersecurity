@@ -1,47 +1,68 @@
 # Evidence Register
 
-This register maps each public screenshot to the investigation question it supports.
+This evidence register is based **only on the nine screenshots supplied for this rebuild**.
 
-| ID | File | Evidence | Purpose | Required Redaction |
-|---|---|---|---|---|
-| E-01 | `01-resource-group-discovery.png` | Resource-group inventory | Establish naming anomaly | Stage 1 answer, operative-specific RG/ID |
-| E-02 | `02-resource-tags-redacted.png` | Resource tags | Establish metadata context | Intern flag, owner identity, unique resource name if needed |
-| E-03 | `03-deployment-history-redacted.png` | ARM deployment history | Establish provisioning record | Stage 3 deployment name, Stage 1 RG answer |
-| E-04 | `04-deployment-parameters-redacted.png` | Deployment parameters | Establish deployment context | Challenge flag, GUID values, RG/deployment answers |
-| E-05 | `05-policy-state-cli-redacted.png` | Azure Policy state | Establish compliance and action | Policy GUIDs, assignment GUIDs, subscription ID, target RG answer |
-| E-06 | `06-policy-definition-cli-redacted.png` | Naming policy definition | Establish rule logic | Subscription ID, policy GUID, creator information |
-| E-07 | `07-policy-assignment-portal-redacted.png` | Policy assignment configuration | Establish Audit effect | Description/Stage 4 answer, assignment ID, subscription ID |
-| E-08 | `08-rbac-boundary-redacted.png` | Authorization failure | Establish investigation limitation | Username, email, object ID, subscription ID, assignment ID |
+| ID | Recommended Filename | Screenshot Content | Investigation Purpose |
+|---|---|---|---|
+| E-01 | `01-resource-group-discovery.png` | `az group --help` + `az group list -o table` | Identify the naming outlier |
+| E-02 | `02-resource-inventory-tags.png` | `az resource list -g ... -o json` | Inspect the storage account and current resource tags |
+| E-03 | `03-deployment-parameters.png` | `az deployment group show --query properties.parameters` | Inspect deployment-time inputs |
+| E-04 | `04-deployment-history.png` | `az deployment group list -o table` | Establish deployment record, status, timestamp, and mode |
+| E-05 | `05-policy-state-cli.png` | `az policy state list` with JMESPath projection | Establish compliance state and effective action |
+| E-06 | `06-policy-definition-cli.png` | `az policy definition show` | Establish Naming Convention rule and effect choices |
+| E-07 | `07-policy-definition-powershell.png` | `Get-AzPolicyDefinition` | Secondary validation of the custom policy definition |
+| E-08 | `08-policy-assignment-rbac-failure.png` | `az policy assignment show` → AuthorizationFailed | Document the Reader RBAC boundary |
+| E-09 | `09-policy-assignment-portal.png` | Azure Portal Naming Convention assignment | Confirm `Effect = Audit` |
 
-## Publicly Safe Technical Values
+## Important Evidence Relationships
 
-The following values are intentionally retained because they explain the technology rather than reveal challenge answers:
+### Stage 1
+E-01
+
+### Stage 2
+E-02
+
+### Stage 3
+E-03 and E-04
+
+### Stage 4
+E-05 through E-09
+
+---
+
+## Safe Technical Values to Keep
 
 - `Audit`
 - `Deny`
 - `Disabled`
 - `NonCompliant`
-- `Incremental`
 - `Succeeded`
+- `Incremental`
 - `East US`
+- `eastus`
+- `StorageV2`
+- `Standard_LRS`
 - `Microsoft.Storage/storageAccounts`
+- `Microsoft.Resources/subscriptions/resourceGroups`
 - `rg-*`
-- `Reader`
-- `Contributor`
-- Azure service names
-- Relevant timestamps
+- generic role names such as Reader and Contributor
+- deployment timestamps
 
-## Never Publish
+---
 
-- `MadHat{...}` values
-- Stage-answer resource-group names
-- Stage-answer deployment names
-- Operative IDs
-- Tenant IDs
-- Subscription IDs
-- Object IDs
-- Policy-definition GUIDs
-- Policy-assignment GUIDs
-- Group GUIDs
-- Usernames or tenant email addresses
-- Any challenge-specific value that would allow another learner to bypass the investigation
+## Values to Redact
+
+- all `MadHat{...}` values
+- Stage 1 resource-group answer
+- Stage 3 deployment-name answer
+- Stage 4 Description value
+- storage-account name
+- owner value
+- subscription IDs
+- tenant IDs
+- usernames and tenant emails
+- operative identifiers
+- object/group IDs
+- policy-definition GUIDs
+- policy-assignment GUIDs
+- full resource IDs and assignment paths
