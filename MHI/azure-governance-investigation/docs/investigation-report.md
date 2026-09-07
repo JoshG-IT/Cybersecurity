@@ -81,9 +81,7 @@ az group list -o table
 
 Most resource groups followed the expected `rg-` naming pattern. One did not.
 
-> **[SCREENSHOT HERE - `../evidence/01-resource-group-discovery.png`]**  
-> **REDACT:** Stage 1 answer, operative-specific RG, other full environment names as appropriate.  
-> **KEEP:** `rg-` prefixes, Location, Status, and the CLI command/help context.
+> ![Resource Group Discovery](../evidence/01-resource-group-discovery.png)
 
 **Assessment:** the naming anomaly justified further inspection.
 
@@ -112,9 +110,7 @@ Tags included:
 - `intern-flag`
 - `owner`
 
-> **[SCREENSHOT HERE - `../evidence/02-resource-inventory-tags.png`]**  
-> **REDACT:** subscription ID, resource-group answer, storage-account name, full ID path, intern-flag value, owner value.  
-> **KEEP:** resource type, StorageV2, eastus, Succeeded, Standard_LRS, tag keys, `unspecified`, and `unknown`.
+> ![Resource Inventory Tags](../evidence/02-resource-inventory-tags.png)
 
 **Assessment:** Stage 2 evidence came directly from the live resource's current-state metadata.
 
@@ -131,9 +127,7 @@ az deployment group show `
 
 The parameters included `internFlag`, `location`, and `operativesGroupId`.
 
-> **[SCREENSHOT HERE - `../evidence/03-deployment-parameters.png`]**  
-> **REDACT:** Stage 1 answer, Stage 3 answer, internFlag value, operativesGroupId value, GUIDs.  
-> **KEEP:** parameter names/types and `eastus`.
+> ![Deployment Parameters](../evidence/03-deployment-parameters.png)
 
 **Assessment:** this showed deployment-time input data rather than current resource state.
 
@@ -149,9 +143,7 @@ az deployment group list `
 
 The deployment record showed a successful Incremental deployment and a timestamp.
 
-> **[SCREENSHOT HERE - `../evidence/04-deployment-history.png`]**  
-> **REDACT:** deployment name and resource-group answer.  
-> **KEEP:** State, Timestamp, and Mode.
+> ![Deployment History](../evidence/04-deployment-history.png)
 
 **Assessment:** ARM deployment history supplied the provisioning audit trail.
 
@@ -168,9 +160,7 @@ az policy state list `
 
 The relevant record showed `NonCompliant` with an action of `audit`.
 
-> **[SCREENSHOT HERE - `../evidence/05-policy-state-cli.png`]**  
-> **REDACT:** resource-group answer, PolicyReference values, PolicyName/GUID values, and environment-specific IDs.  
-> **KEEP:** Compliance, ActionPerPolicy, Location, NonCompliant, audit, eastus.
+> ![Policy State CLI](../evidence/05-policy-state-cli.png)
 
 **Assessment:** Azure Policy successfully detected the violation.
 
@@ -193,9 +183,7 @@ The definition showed:
 - target resource type `Microsoft.Resources/subscriptions/resourceGroups`
 - resource-group names `notLike` `rg-*`
 
-> **[SCREENSHOT HERE - `../evidence/06-policy-definition-cli.png`]**  
-> **REDACT:** IDs, subscription ID, createdBy data, creator account.  
-> **KEEP:** rule logic, display name, mode, type, effect options, `rg-*`.
+> ![Policy Definition CLI](../evidence/06-policy-definition-cli.png) 
 
 **Assessment:** the policy definition was capable of identifying the naming violation.
 
@@ -214,9 +202,7 @@ The PowerShell result confirmed:
 - PolicyType `Custom`
 - Version `1.0.0`
 
-> **[SCREENSHOT HERE - `../evidence/07-policy-definition-powershell.png`]**  
-> **REDACT:** policy/subscription IDs, createdBy fields, usernames/emails.  
-> **KEEP:** DisplayName, Mode, PolicyType, Type, Version.
+> ![Policy Definition Powershell](../evidence/07-policy-definition-powershell.png) 
 
 **Assessment:** the Azure PowerShell result independently validated the custom definition.
 
@@ -236,9 +222,7 @@ AuthorizationFailed
 Microsoft.Authorization/policyAssignments/read
 ```
 
-> **[SCREENSHOT HERE - `../evidence/08-policy-assignment-rbac-failure.png`]**  
-> **REDACT:** assignment name, username/email, object ID, subscription ID, assignment ID/path.  
-> **KEEP:** AuthorizationFailed, denied action, and authorization wording.
+> ![Policy Assignment RBAC Failure](../evidence/08-policy-assignment-rbac-failure.png) 
 
 **Assessment:** Reader access did not include direct subscription-level policy-assignment read permission.
 
@@ -254,9 +238,7 @@ The policy-assignment view showed:
 - Policy enforcement: `Default`
 - Effect: `Audit`
 
-> **[SCREENSHOT HERE - `../evidence/09-policy-assignment-portal.png`]**  
-> **REDACT:** Description/Stage 4 answer, subscription ID, Assignment ID/path.  
-> **KEEP:** Name, Scope label, Definition type, Policy enforcement, and Effect = Audit.
+> ![Policy Assignment Portal](../evidence/09-policy-assignment-portal.png)
 
 **Assessment:** the assignment was configured to audit the violation rather than deny the request.
 
