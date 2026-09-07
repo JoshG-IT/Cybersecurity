@@ -3,7 +3,7 @@
 
 > Investigated a non-compliant Azure deployment in a **live multi-user Azure training tenant**, reconstructed the ARM deployment trail, and identified why an active naming policy detected the violation without preventing resource creation.
 
-[ARCHITECTURE IMAGE HERE - `diagrams/azure-governance-investigation.png`]
+![Azure Governance Investigation Architecture](diagrams/azure-governance-investigation.png)
 
 > **Scope note:** The architecture diagram represents only the identities, resources, deployment artifacts, and governance controls relevant to this investigation. Other resources in the shared training subscription are intentionally omitted.
 
@@ -73,9 +73,7 @@ az group list -o table
 
 Most resource groups followed an `rg-` naming pattern. One resource group did not follow that pattern and became the investigation target.
 
-> **[SCREENSHOT HERE - rename to `evidence/01-resource-group-discovery.png`]**  
-> **REDACT:** the Stage 1 resource-group answer, the full operative-specific resource-group name/ID, and any other full environment-specific resource-group names you do not want public.  
-> **KEEP:** `az group --help`, `az group list -o table`, enough `rg-` prefixes to establish the naming pattern, Location, and Status.
+> ![Resource Group Discovery](evidence/01-resource-group-discovery.png)  
 
 **What I concluded:** subscription-level inventory and naming-pattern analysis were sufficient to identify the outlier.
 
@@ -101,9 +99,7 @@ The output showed one resource:
 
 The same result also exposed the resource tags, including `cost-center`, `environment`, `intern-flag`, and `owner`.
 
-> **[SCREENSHOT HERE - rename to `evidence/02-resource-inventory-tags.png`]**  
-> **REDACT:** subscription ID, Stage 1 resource-group answer, storage-account name, full resource ID/path, `intern-flag` value, `owner` value, and any other challenge-specific identifiers.  
-> **KEEP:** `Microsoft.Storage/storageAccounts`, `StorageV2`, `eastus`, `Succeeded`, `Standard_LRS`, tag keys, `cost-center: unspecified`, and `environment: unknown`.
+> ![Resource Inventory Tags](evidence/02-resource-inventory-tags.png)  
 
 **What I concluded:** the resource group contained a single Azure Storage account, and the live resource metadata exposed the tags required for Stage 2.
 
@@ -128,9 +124,7 @@ The deployment parameters included:
 - `location`
 - `operativesGroupId`
 
-> **[SCREENSHOT HERE - rename to `evidence/03-deployment-parameters.png`]**  
-> **REDACT:** Stage 1 resource-group answer, Stage 3 deployment name, `internFlag` value, `operativesGroupId` value, and any GUIDs.  
-> **KEEP:** parameter names, parameter types, and `location: eastus`.
+> ![Deployment Parameters](evidence/03-deployment-parameters.png)  
 
 ### Deployment history
 
@@ -142,9 +136,7 @@ az deployment group list `
 
 The deployment record showed a successful **Incremental** deployment and provided the deployment timestamp.
 
-> **[SCREENSHOT HERE - rename to `evidence/04-deployment-history.png`]**  
-> **REDACT:** Stage 1 resource-group answer and Stage 3 deployment-name answer.  
-> **KEEP:** `Succeeded`, the Timestamp column/value, and `Incremental`.
+> ![Deployment History](evidence/04-deployment-history.png)  
 
 **What I concluded:** ARM deployment history provided a traceable provisioning record separate from the resource's current-state inventory.
 
@@ -163,9 +155,7 @@ az policy state list `
 
 The result contained multiple policy evaluations. The naming-policy record was `NonCompliant` with an effective action of `audit`.
 
-> **[SCREENSHOT HERE - rename to `evidence/05-policy-state-cli.png`]**  
-> **REDACT:** Stage 1 resource-group answer in the command, PolicyReference values, PolicyName/GUID values, policy/assignment identifiers, and other environment-specific IDs.  
-> **KEEP:** Compliance, ActionPerPolicy, Location, `NonCompliant`, `audit`, and `eastus`.
+> ![Policy State CLI](evidence/05-policy-state-cli.png)  
 
 **What I concluded:** Azure Policy was evaluating the resource. The violation was being detected rather than ignored.
 
@@ -190,11 +180,7 @@ The JSON showed:
 - resource type condition: `Microsoft.Resources/subscriptions/resourceGroups`
 - resource-group name condition: `notLike: "rg-*"`
 
-> **[SCREENSHOT HERE - rename to `evidence/06-policy-definition-cli.png`]**  
-> **REDACT:** policy-definition ID in the command, subscription ID, policy-definition GUIDs, `createdBy` GUID, creator email/username, and other environment-specific IDs.  
-> **KEEP:** `Naming Convention`, `All`, `Custom`, `Audit`, `Deny`, `Disabled`, the resource-group type condition, and `rg-*`.
-
-`rg-*` is intentionally safe to keep because it is the technical policy rule being evaluated, not a challenge flag or tenant identifier.
+> ![Policy Definition CLI](evidence/06-policy-definition-cli.png)  
 
 **What I concluded:** the custom policy definition was capable of detecting the resource-group naming violation.
 
@@ -215,9 +201,7 @@ The PowerShell output confirmed:
 - PolicyType: `Custom`
 - Version: `1.0.0`
 
-> **[SCREENSHOT HERE - rename to `evidence/07-policy-definition-powershell.png`]**  
-> **REDACT:** policy-definition ID in the command, subscription ID, definition GUID, `createdBy`, `SystemDataCreatedBy`, `SystemDataLastModifiedBy`, usernames/emails, and other identifying values.  
-> **KEEP:** DisplayName, Mode, PolicyType, Type, and Version.
+> ![Policy Definition Powershell](evidence/07-policy-definition-powershell.png)  
 
 **What I concluded:** Azure PowerShell independently exposed the same policy definition, confirming the CLI finding.
 
@@ -239,9 +223,7 @@ AuthorizationFailed
 Microsoft.Authorization/policyAssignments/read
 ```
 
-> **[SCREENSHOT HERE - rename to `evidence/08-policy-assignment-rbac-failure.png`]**  
-> **REDACT:** policy-assignment name in the command, operative username/email, object ID, subscription ID, policy-assignment ID/path, and all GUIDs.  
-> **KEEP:** `AuthorizationFailed`, `Microsoft.Authorization/policyAssignments/read`, `does not have authorization to perform action`, and `Code: AuthorizationFailed`.
+> ![Policy Assignment RBAC Failure](evidence/08-policy-assignment-rbac-failure.png)  
 
 **What I concluded:** this was an RBAC authorization boundary, not a malformed Azure CLI command.
 
@@ -260,9 +242,7 @@ The assignment view showed:
 - Parameter name: `Effect`
 - Parameter value: `Audit`
 
-> **[SCREENSHOT HERE - rename to `evidence/09-policy-assignment-portal.png`]**  
-> **REDACT:** the Description value because it contains the Stage 4 challenge answer, subscription ID, Assignment ID/path, and any other environment-specific identifiers.  
-> **KEEP:** `Naming Convention`, `Mad Hat Labs` scope label, Definition type, Policy enforcement, `Effect`, and `"Audit"`.
+> ![Policy Assignment Portal](evidence/09-policy-assignment-portal.png)  
 
 **What I concluded:** the assignment was configured with an `Audit` effect.
 
