@@ -1,6 +1,6 @@
-# Azure PowerShell Investigation Commands
+# Azure PowerShell Validation
 
-Azure PowerShell was used as a secondary validation interface. Azure CLI remained the primary investigation tool.
+Azure PowerShell was used as a secondary validation interface. Azure CLI remained the primary command-line investigation tool.
 
 ---
 
@@ -10,31 +10,24 @@ Azure PowerShell was used as a secondary validation interface. Azure CLI remaine
 Get-AzPolicyDefinition -Name <POLICY_DEFINITION_ID>
 ```
 
-**Purpose:** Retrieve the policy definition and validate its display name, mode, type, parameters, and rule.
+The screenshot supplied for this investigation exposed:
+
+- DisplayName: `Naming Convention`
+- Mode: `All`
+- PolicyType: `Custom`
+- Version: `1.0.0`
 
 ---
 
 ## Policy State
 
+A related validation command used during the investigation was:
+
 ```powershell
 Get-AzPolicyState -ResourceGroupName <RESOURCE_GROUP>
 ```
 
-**Purpose:** Retrieve policy-compliance state for a resource group.
-
----
-
-## Filter a Specific Policy Definition
-
-```powershell
-Get-AzPolicyState -ResourceGroupName <RESOURCE_GROUP> |
-Where-Object {
-    $_.PolicyDefinitionName -eq '<POLICY_DEFINITION_ID>'
-} |
-Format-List *
-```
-
-Useful properties include:
+Useful fields include:
 
 ```text
 PolicyAssignmentName
@@ -50,43 +43,24 @@ Timestamp
 
 ---
 
-## Create a Focused Policy-State View
-
-```powershell
-Get-AzPolicyState -ResourceGroupName <RESOURCE_GROUP> |
-Where-Object {
-    $_.PolicyDefinitionName -eq '<POLICY_DEFINITION_ID>'
-} |
-Select-Object `
-    PolicyAssignmentName,
-    PolicyAssignmentId,
-    PolicyAssignmentScope,
-    PolicyDefinitionName,
-    ComplianceState,
-    PolicyDefinitionAction,
-    ResourceId
-```
-
----
-
 ## Policy Assignment
+
+The Azure PowerShell equivalent of the assignment read is:
 
 ```powershell
 Get-AzPolicyAssignment `
-  -Name <POLICY_ASSIGNMENT_ID> `
+  -Name <POLICY_ASSIGNMENT_NAME> `
   -Scope <POLICY_ASSIGNMENT_SCOPE>
 ```
 
-**Investigation result:** Direct subscription-level policy-assignment retrieval was restricted by RBAC in the training environment.
+The same Azure RBAC model applies regardless of whether the request comes from Azure CLI or Azure PowerShell.
 
 ---
 
-# CLI vs Azure PowerShell
+## Interface Mapping
 
-| Question | Azure CLI | Azure PowerShell |
+| Investigation Question | Azure CLI | Azure PowerShell |
 |---|---|---|
 | What policy evaluations exist? | `az policy state list` | `Get-AzPolicyState` |
 | What is the rule? | `az policy definition show` | `Get-AzPolicyDefinition` |
 | How is it assigned? | `az policy assignment show` | `Get-AzPolicyAssignment` |
-
-The same RBAC model applies regardless of interface.
