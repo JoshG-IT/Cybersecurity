@@ -1,9 +1,139 @@
 # Technical Analysis
-## Azure Policy, ARM, RBAC, and CLI Investigation Notes
+## Azure CLI, ARM, Azure Policy, JMESPath, and RBAC
 
-## 1. Why the Portal and CLI Looked Different
+## 1. Current State vs Deployment History
 
-The Azure Portal presented policy compliance as one connected workflow. Azure CLI exposed several separate objects that needed to be correlated.
+One of the most important distinctions in this investigation was:
+
+```text
+az resource list
+= What exists now?
+
+az deployment group show
+= What inputs were used by a specific deployment?
+
+az deployment group list
+= What deployment records exist?
+```
+
+This prevented current-state evidence from being confused with deployment-time evidence.
+
+---
+
+## 2. Azure CLI Discovery Pattern
+
+```text
+--help
+↓
+learn available commands/options
+
+list
+↓
+discover objects
+
+show
+↓
+inspect one known object
+
+--query
+↓
+reduce JSON to relevant evidence
+```
+
+A practical mental model:
+
+```text
+list = I do not know the object yet
+show = I know the exact object I want
+```
+
+---
+
+## 3. Resource Inventory
+
+```powershell
+az resource list `
+  -g <RESOURCE_GROUP> `
+  -o json
+```
+
+Useful current-state properties observed in this investigation included:
+
+```text
+createdTime
+changedTime
+kind
+location
+name
+provisioningState
+resourceGroup
+sku
+tags
+type
+```
+
+---
+
+## 4. ARM Deployment Parameters
+
+```powershell
+az deployment group show `
+  -g <RESOURCE_GROUP> `
+  -n <DEPLOYMENT_NAME> `
+  --query properties.parameters
+```
+
+Observed parameter names:
+
+```text
+internFlag
+location
+operativesGroupId
+```
+
+---
+
+## 5. ARM Deployment History
+
+```powershell
+az deployment group list `
+  -g <RESOURCE_GROUP> `
+  -o table
+```
+
+This exposed:
+
+```text
+Name
+State
+Timestamp
+Mode
+ResourceGroup
+```
+
+---
+
+## 6. JMESPath
+
+JMESPath was used to reduce Azure CLI JSON results.
+
+```text
+[0]                     first object
+[0].property            property from first object
+[].property             property from all objects
+[?property=='value']    filter
+[].{Name:property}      custom projection
+```
+
+Policy-state projection used during the investigation:
+
+```powershell
+--query "[].{PolicyReference:policyDefinitionReferenceId, PolicyName:policyDefinitionName, Compliance:complianceState, ActionPerPolicy:policyDefinitionAction, Location:resourceLocation}"
+```
+
+---
+
+## 7. Azure Policy Object Model
 
 ```text
 Policy Definition
@@ -13,304 +143,138 @@ Policy Assignment
 Applies the rule to a scope and supplies configuration
         ↓
 Policy State
-Records the evaluation result for a resource
-```
-
-This distinction became important during Stage 4.
-
----
-
-## 2. `list` vs `show`
-
-A useful Azure CLI pattern throughout the investigation was:
-
-```text
-list
-= I do not know the object name yet; discover objects
-
-show
-= I know the object identifier; inspect one object
-```
-
-Examples:
-
-```powershell
-az group list
-az deployment group list -g <RESOURCE_GROUP>
-az policy state list -g <RESOURCE_GROUP>
-```
-
-versus:
-
-```powershell
-az group show -n <RESOURCE_GROUP>
-az deployment group show -g <RESOURCE_GROUP> -n <DEPLOYMENT>
-az policy definition show --name <POLICY_DEFINITION>
+Records the evaluation result
 ```
 
 ---
 
-## 3. Resource Discovery
-
-### Resource Groups
-
-```powershell
-az group list -o table
-```
-
-Purpose: identify naming anomalies at subscription scope.
-
-### Resources Within the Target Group
-
-```powershell
-az resource list \
-  -g <RESOURCE_GROUP> \
-  -o table
-```
-
-Purpose: establish workload scope.
-
----
-
-## 4. ARM Deployment Evidence
-
-### Deployment Inventory
-
-```powershell
-az deployment group list \
-  -g <RESOURCE_GROUP> \
-  -o table
-```
-
-### Deployment Parameters
-
-```powershell
-az deployment group show \
-  -g <RESOURCE_GROUP> \
-  -n <DEPLOYMENT_NAME> \
-  --query properties.parameters
-```
-
-### Optional Deployment Operations
-
-```powershell
-az deployment operation group list \
-  -g <RESOURCE_GROUP> \
-  -n <DEPLOYMENT_NAME> \
-  --query "[].{Operation:properties.provisioningOperation,State:properties.provisioningState,Type:properties.targetResource.resourceType}" \
-  -o table
-```
-
-Purpose: break a deployment into its individual ARM operations.
-
----
-
-## 5. JMESPath Filtering
-
-Large JSON results were narrowed using `--query`.
-
-Example concept:
-
-```powershell
-az policy state list \
-  -g <RESOURCE_GROUP> \
-  --query "[?complianceState=='NonCompliant']"
-```
-
-Custom projections make CLI output easier to read:
-
-```powershell
---query "[].{Compliance:complianceState,Effect:policyDefinitionAction}"
-```
-
-General syntax:
-
-```text
-[].{FriendlyColumn:actualJsonProperty}
-```
-
-JMESPath property names are case-sensitive.
-
----
-
-## 6. Azure Policy State
-
-Policy state answered:
-
-> What happened when Azure evaluated this resource?
+## 8. Policy State
 
 ```powershell
 az policy state list -g <RESOURCE_GROUP>
 ```
 
-Relevant fields included:
+The relevant record was:
 
 ```text
-policyAssignmentName
-policyAssignmentId
-policyAssignmentScope
-policyDefinitionName
-policyDefinitionAction
-complianceState
-resourceId
-resourceType
-timestamp
-```
-
-The relevant evaluation showed:
-
-```text
-ComplianceState        = NonCompliant
-PolicyDefinitionAction = audit
+Compliance        = NonCompliant
+ActionPerPolicy   = audit
+Location          = eastus
 ```
 
 ---
 
-## 7. Azure Policy Definition
-
-The policy definition answered:
-
-> What rule is Azure evaluating?
+## 9. Policy Definition
 
 ```powershell
-az policy definition show \
+az policy definition show `
   --name <POLICY_DEFINITION_ID>
 ```
 
-The definition showed:
+Observed policy logic:
 
-- Display name: Naming Convention
-- Policy type: Custom
-- Mode: All
-- Resource-group naming pattern: `rg-*`
-- Configurable effects: Audit, Deny, Disabled
+```text
+displayName = Naming Convention
+mode        = All
+policyType  = Custom
+```
 
-`rg-*` is retained publicly because it documents the technical policy logic and is not a challenge answer.
+Effect parameter:
+
+```text
+Audit
+Deny
+Disabled
+```
+
+Resource-group condition:
+
+```text
+type == Microsoft.Resources/subscriptions/resourceGroups
+name notLike rg-*
+```
 
 ---
 
-## 8. Policy Assignment Read Failure
-
-The policy assignment answered:
-
-> Where is the rule applied and how is it configured?
-
-The logical command was:
+## 10. Azure PowerShell Validation
 
 ```powershell
-az policy assignment show \
-  --name <POLICY_ASSIGNMENT_ID>
+Get-AzPolicyDefinition -Name <POLICY_DEFINITION_ID>
 ```
 
-The Reader identity was denied:
+The PowerShell result confirmed the same custom definition and exposed:
+
+```text
+DisplayName
+Mode
+PolicyType
+Version
+```
+
+---
+
+## 11. RBAC Boundary
+
+```powershell
+az policy assignment show `
+  --name <POLICY_ASSIGNMENT_NAME>
+```
+
+Observed failure:
 
 ```text
 AuthorizationFailed
 Microsoft.Authorization/policyAssignments/read
 ```
 
-This was not an Azure CLI syntax issue.
+This demonstrated an authorization boundary rather than a CLI syntax error.
 
----
+The Reader identity could:
 
-## 9. Validation Through Azure PowerShell
-
-Azure PowerShell was used as a secondary validation interface.
-
-### Policy Definition
-
-```powershell
-Get-AzPolicyDefinition -Name <POLICY_DEFINITION_ID>
+```text
+read policy state
+read the custom policy definition
+identify the assignment relationship
 ```
 
-### Policy State
+but could not:
 
-```powershell
-Get-AzPolicyState -ResourceGroupName <RESOURCE_GROUP>
+```text
+directly read the subscription-level assignment object
 ```
-
-Filtering a definition:
-
-```powershell
-Get-AzPolicyState -ResourceGroupName <RESOURCE_GROUP> |
-Where-Object {
-    $_.PolicyDefinitionName -eq '<POLICY_DEFINITION_ID>'
-} |
-Format-List *
-```
-
-This exposed the same policy-state relationship as Azure CLI.
-
-### Policy Assignment
-
-```powershell
-Get-AzPolicyAssignment \
-  -Name <POLICY_ASSIGNMENT_ID> \
-  -Scope <POLICY_ASSIGNMENT_SCOPE>
-```
-
-This was also restricted by RBAC.
-
----
-
-## 10. Azure Resource Graph Validation
-
-Azure Resource Graph was used to determine whether policy-assignment data could be retrieved through `PolicyResources`.
-
-Policy states remained visible, while the target subscription-level policy assignment object was not directly returned to the Reader identity.
-
-This reinforced the conclusion that the investigation had reached an authorization boundary rather than a CLI limitation.
-
----
-
-## 11. Direct ARM REST Validation
-
-A direct ARM `GET` was tested through `az rest`.
-
-Conceptually:
-
-```powershell
-az rest \
-  --method get \
-  --url "https://management.azure.com/<POLICY_ASSIGNMENT_RESOURCE_ID>?api-version=<API_VERSION>"
-```
-
-The same `policyAssignments/read` authorization failure occurred.
-
-This demonstrated that the authorization failure was enforced by ARM itself, not merely by the Azure CLI command wrapper.
 
 ---
 
 ## 12. Policy Effect Interpretation
 
-| Effect | High-Level Behavior |
+| Effect | Behavior |
 |---|---|
-| Audit | Allows request, records violation |
-| Deny | Blocks non-compliant request |
-| Disabled | Policy rule does not evaluate for enforcement |
-
-The incident behavior was consistent with `Audit`.
+| `Audit` | Detects and records non-compliance while allowing the request |
+| `Deny` | Rejects a non-compliant request |
+| `Disabled` | Disables the policy's effect |
 
 ---
 
-## 13. Investigation Takeaway
+## 13. Technical Takeaway
 
-The investigation required correlating:
+The investigation required correlation of:
 
 ```text
-Resource Inventory
+Resource inventory
         +
-Resource Metadata
+Resource tags
         +
-ARM Deployment History
+ARM deployment parameters
         +
-Policy State
+ARM deployment history
         +
-Policy Definition
+Policy state
         +
-Policy Assignment Configuration
+Policy definition
+        +
+Policy assignment
         +
 RBAC
 ```
 
-The technical root cause was not a failed policy engine. It was a governance control configured for detection rather than prevention.
+The policy engine behaved as configured. The governance weakness was the use of a detective effect where preventive enforcement would have required `Deny`.
