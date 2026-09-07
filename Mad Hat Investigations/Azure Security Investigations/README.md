@@ -20,22 +20,3 @@ Each case represents the concluding hands-on investigation for a major Azure sec
 | **MHI-AZ-008** | [Threat Hunt](MHI-AZ-008-threat-hunt/) | Microsoft Sentinel and threat hunting | ⏳ Pending |
 | **MHI-AZ-009** | [Score the Tenant](MHI-AZ-009-score-the-tenant/) | Defender for Cloud and CSPM | ⏳ Pending |
 | **MHI-AZ-010** | [The Breach](MHI-AZ-010-the-breach/) | Capstone cloud security investigation | ⏳ Pending |
-
-## Progress
-
-```text
-MHI-AZ-001  ██████████  COMPLETE
-MHI-AZ-002  ░░░░░░░░░░  PENDING
-MHI-AZ-003  ░░░░░░░░░░  PENDING
-MHI-AZ-004  ░░░░░░░░░░  PENDING
-MHI-AZ-005  ░░░░░░░░░░  PENDING
-MHI-AZ-006  ░░░░░░░░░░  PENDING
-MHI-AZ-007  ░░░░░░░░░░  PENDING
-MHI-AZ-008  ░░░░░░░░░░  PENDING
-MHI-AZ-009  ░░░░░░░░░░  PENDING
-MHI-AZ-010  ░░░░░░░░░░  PENDING
-```
-
-**1 / 10 investigations completed**
-
-[← Back to Mad Hat Investigations](../)
