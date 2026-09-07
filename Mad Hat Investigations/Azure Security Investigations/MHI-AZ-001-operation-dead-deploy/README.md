@@ -293,7 +293,6 @@ The policy engine was not broken. The governance control was configured for **de
 | High | Evaluate changing the naming policy from `Audit` to `Deny` after testing | Converts the control from detective to preventive |
 | High | Review the scope and duration of temporary Contributor access | Reduces unnecessary provisioning capability |
 | Medium | Use time-bound elevated access where supported | Limits the exposure window for privileged roles |
-| Medium | Enforce meaningful tag values at deployment time | Improves ownership, environment, lifecycle, and cost metadata |
 | Medium | Document intentional Audit-mode exceptions | Prevents temporary monitoring configurations from becoming permanent |
 | Medium | Monitor policy compliance continuously | Helps identify governance drift and recurring violations |
 
@@ -307,7 +306,7 @@ The policy engine was not broken. The governance control was configured for **de
 |---|---|
 | **Who** | Junior intern with temporary Contributor access |
 | **What** | A non-compliant resource group containing one Azure Storage account |
-| **When** | Identified through the ARM deployment timestamp |
+| **When** | Identified through the ARM deployment at 2026-05-24T21:42:45 |
 | **Where** | Mad Hat Labs training subscription, resource located in East US |
 | **Why** | The naming policy used `Audit`, which detected the violation but did not block creation |
 
@@ -330,10 +329,7 @@ The policy engine was not broken. The governance control was configured for **de
 
 For the deeper technical material:
 
-- [Full Investigation Report](docs/investigation-report.md)
 - [Technical Analysis](docs/technical-analysis.md)
-- [Evidence Register](docs/evidence-register.md)
-- [Screenshot Redaction Guide](docs/redaction-guide.md)
 - [Azure CLI Commands](queries/azure-cli.md)
 - [Azure PowerShell Commands](queries/azure-powershell.md)
 
