@@ -1,12 +1,10 @@
 # Azure CLI Investigation Commands
 
-These are sanitized examples of the Azure CLI commands used during the investigation.
-
-> Replace placeholders with values from your own authorized environment. Challenge answers and environment-specific identifiers are intentionally omitted.
+These are the Azure CLI command patterns used during the investigation. Environment-specific answers are replaced with placeholders.
 
 ---
 
-## 1. Discover Azure CLI Resource-Group Commands
+## 1. Discover Resource-Group Commands
 
 ```powershell
 az group --help
@@ -20,228 +18,125 @@ az group --help
 az group list -o table
 ```
 
-**Purpose:** Identify naming patterns and anomalies at subscription scope.
+**Question answered:** What resource groups exist, and which one breaks the naming pattern?
 
 ---
 
-## 3. Inspect a Resource Group
+## 3. Inspect Current Resource State and Tags
 
 ```powershell
-az group show \
-  --name <RESOURCE_GROUP>
-```
-
-**Purpose:** Review location, provisioning state, tags, and other resource-group properties.
-
----
-
-## 4. Enumerate Resources
-
-```powershell
-az resource list \
-  --resource-group <RESOURCE_GROUP> \
-  -o table
-```
-
-**Purpose:** Determine what resources exist within the group.
-
----
-
-## 5. Review Resource Metadata
-
-```powershell
-az resource list \
-  --resource-group <RESOURCE_GROUP> \
-  --query "[].{Name:name,Type:type,Location:location,Tags:tags}" \
+az resource list `
+  -g <RESOURCE_GROUP> `
   -o json
 ```
 
-**Purpose:** Review resource type, location, and tags.
+**Question answered:** What resources exist in this group **right now**, and what metadata/tags are attached?
 
 ---
 
-## 6. List ARM Deployments
+## 4. Inspect Deployment Parameters
 
 ```powershell
-az deployment group list \
-  --resource-group <RESOURCE_GROUP> \
-  -o table
-```
-
-**Purpose:** Identify deployment records associated with the resource group.
-
----
-
-## 7. Inspect Deployment Parameters
-
-```powershell
-az deployment group show \
-  --resource-group <RESOURCE_GROUP> \
-  --name <DEPLOYMENT_NAME> \
+az deployment group show `
+  -g <RESOURCE_GROUP> `
+  -n <DEPLOYMENT_NAME> `
   --query properties.parameters
 ```
 
-**Purpose:** Review the inputs used during deployment.
+**Question answered:** What values were passed into this specific deployment?
 
 ---
 
-## 8. Inspect Deployment Details
+## 5. List ARM Deployment History
 
 ```powershell
-az deployment group show \
-  --resource-group <RESOURCE_GROUP> \
-  --name <DEPLOYMENT_NAME> \
-  --query "{State:properties.provisioningState,Mode:properties.mode,Timestamp:properties.timestamp,Parameters:properties.parameters,OutputResources:properties.outputResources}"
-```
-
----
-
-## 9. List Deployment Operations
-
-```powershell
-az deployment operation group list \
-  --resource-group <RESOURCE_GROUP> \
-  --name <DEPLOYMENT_NAME> \
-  --query "[].{Operation:properties.provisioningOperation,State:properties.provisioningState,Type:properties.targetResource.resourceType}" \
+az deployment group list `
+  -g <RESOURCE_GROUP> `
   -o table
 ```
 
-**Purpose:** Review the individual ARM operations performed by a deployment.
+**Question answered:** What deployment records exist for this resource group?
 
 ---
 
-## 10. Query Policy State
+## 6. Query Policy State
 
 ```powershell
-az policy state list \
-  -g <RESOURCE_GROUP>
+az policy state list `
+  -g <RESOURCE_GROUP> `
+  -o table `
+  --query "[].{PolicyReference:policyDefinitionReferenceId, PolicyName:policyDefinitionName, Compliance:complianceState, ActionPerPolicy:policyDefinitionAction, Location:resourceLocation}"
 ```
 
-**Purpose:** Review policy evaluation results for resources in the group.
+**Question answered:** What policy evaluations apply, what is their compliance state, and what action was effective?
 
 ---
 
-## 11. Filter Non-Compliant Policy State
+## 7. Inspect the Policy Definition
 
 ```powershell
-az policy state list \
-  -g <RESOURCE_GROUP> \
-  --query "[?complianceState=='NonCompliant'].{Compliance:complianceState,Effect:policyDefinitionAction,Location:resourceLocation}" \
-  -o table
-```
-
-**Purpose:** Reduce policy-state output to non-compliant evaluations.
-
----
-
-## 12. Inspect a Policy Definition
-
-```powershell
-az policy definition show \
+az policy definition show `
   --name <POLICY_DEFINITION_ID>
 ```
 
-**Purpose:** Review the policy rule, supported effect values, mode, and policy type.
+**Question answered:** What rule is Azure evaluating?
 
 ---
 
-## 13. List Policy Assignments
+## 8. Attempt Direct Assignment Read
 
 ```powershell
-az policy assignment list
+az policy assignment show `
+  --name <POLICY_ASSIGNMENT_NAME>
 ```
 
-For scope investigation:
+Observed training-tenant result:
 
-```powershell
-az policy assignment list --help
+```text
+AuthorizationFailed
+Microsoft.Authorization/policyAssignments/read
 ```
 
----
-
-## 14. Inspect a Policy Assignment
-
-```powershell
-az policy assignment show \
-  --name <POLICY_ASSIGNMENT_ID>
-```
-
-**Investigation result:** In this training environment, direct assignment retrieval was blocked by RBAC at subscription scope.
-
----
-
-## 15. Azure Resource Graph - Policy States
-
-```powershell
-az graph query -q "
-PolicyResources
-| where type =~ 'Microsoft.PolicyInsights/PolicyStates'
-| project
-    assignment=tostring(properties.policyAssignmentName),
-    definition=tostring(properties.policyDefinitionId),
-    compliance=tostring(properties.complianceState),
-    effect=tostring(properties.policyDefinitionAction),
-    resource=tostring(properties.resourceId)
-" \
---query data \
--o table
-```
-
-**Purpose:** Validate policy-state relationships through Azure Resource Graph.
-
----
-
-## 16. Direct ARM Request
-
-```powershell
-az rest \
-  --method get \
-  --url "https://management.azure.com/<RESOURCE_ID>?api-version=<API_VERSION>"
-```
-
-**Purpose:** Determine whether a failure originates from the CLI wrapper or ARM authorization itself.
+**Question answered:** Can the Reader identity directly inspect the subscription-level assignment object?
 
 ---
 
 # JMESPath Quick Reference
 
 ```text
-[0]
-First object in an array
-
-[0].property
-Property from the first object
-
-[].property
-Property from every object
-
-[?property=='value']
-Filter objects
-
-[].{FriendlyName:property}
-Create a custom projection
+[0]                     first array item
+[0].property            property from first item
+[].property             property from all items
+[?property=='value']    filter
+[].{Name:property}      custom projection
 ```
 
 Example:
 
 ```powershell
---query "[].{Name:name,Location:location}"
+--query "[].{Compliance:complianceState,Effect:policyDefinitionAction}"
 ```
 
 ---
 
-# Investigation Pattern
+# Investigation Mental Model
 
 ```text
-list
-↓
-discover objects
+az resource list
+= current resource state
 
-show
-↓
-inspect one object
+az deployment group list
+= deployment history
 
---query
-↓
-reduce output to the evidence you need
+az deployment group show
+= one deployment's details/inputs
+
+az policy state list
+= policy evaluation results
+
+az policy definition show
+= policy rule
+
+az policy assignment show
+= assignment configuration
 ```
