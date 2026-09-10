@@ -56,81 +56,30 @@ The investigations documented here originate from hands-on training through **Ma
 
 The portfolio reorganizes the concluding practical exercises into independent security investigation cases.
 
-## Management and Investigation Interfaces
+## Investigation Interfaces and Training Guides
 
-Mad Hat investigations may be completed using different tools depending on the scenario, with many activities demonstrated through graphical interfaces such as the Azure Portal.
+I use the Mad Hat investigation scenarios as opportunities to become familiar with different command-line, scripting, API, query, and graphical interfaces across each platform.
 
-As part of this portfolio, I use these investigations as an opportunity to practice additional Microsoft cloud interfaces and query methods. This helps me build familiarity with command-line, scripting, API, and query-based workflows while still using the Azure Portal when it is the most practical option.
+The objective is not to use every available interface during every investigation. Instead, I use the scenarios to learn which tools are appropriate for the resource, service, identity, log source, or other data being investigated.
 
-My primary learning focus is **Azure CLI**, with PowerShell, Microsoft Graph, KQL, and Azure Resource Graph used when they are relevant to an investigation.
+The interfaces used vary by platform and investigation. Detailed learning notes are maintained within each investigation track.
 
-| Interface / Method | Primary Use |
+| Track | Interface and Training Guides |
 |---|---|
-| [Azure CLI](Guides/azure-cli.md) | Azure resource discovery, configuration inspection, RBAC, Policy, locks, tags, networking, and reconnaissance |
-| [PowerShell](Guides/powershell.md) | Scripting, automation, loops, reusable investigation functions, and processing command output |
-| [Microsoft Graph](Guides/microsoft-graph.md) | Microsoft Entra ID, users, groups, applications, service principals, sign-ins, audit data, and directory information |
-| [KQL](Guides/kql.md) | Log Analytics, Microsoft Sentinel, Defender telemetry, event investigation, and security analytics |
-| [Azure Resource Graph](Guides/azure-resource-graph.md) | Large-scale Azure resource inventory, filtering, and cross-subscription discovery |
-| [Azure Portal](Guides/azure-portal.md) | Visual exploration, validation, and tasks better suited to a graphical interface |
+| Microsoft Azure | [Azure Investigation Guides](Azure%20Security%20Investigations/Guides/) |
+| Amazon Web Services | [AWS Investigation Guides](AWS%20Security%20Investigations/Guides/) |
+| Google Cloud | [GCP Investigation Guides](GCP%20Security%20Investigations/Guides/) |
+| Infrastructure Security Operations | [Infrastructure Security Operations](Infrastructure%20Security%20Operations/) |
 
-### Interface Selection
+### Learning Approach
 
-```text
-What am I investigating?
-        |
-        +-- Azure resource, RBAC, Policy, lock, tag, network
-        |       |
-        |       --> Azure CLI
-        |
-        +-- Repeated task, scripting, or automation
-        |       |
-        |       --> PowerShell
-        |
-        +-- Entra ID, identity, sign-in, or directory data
-        |       |
-        |       --> Microsoft Graph
-        |
-        +-- Logs, events, telemetry, or security activity
-        |       |
-        |       --> KQL
-        |
-        +-- Large-scale Azure resource inventory
-        |       |
-        |       --> Azure Resource Graph
-        |
-        +-- Visual exploration, validation, or a task
-                better suited to a graphical interface
-                |
-                --> Azure Portal
-```
+Across each platform, I focus on understanding:
 
-### Investigation Workflow
+1. What object, service, or data source I am investigating.
+2. Which interface is appropriate for retrieving or analyzing the information.
+3. What service or API exists underneath that interface.
+4. How to inspect and understand the raw information before filtering it.
+5. How different resources, identities, permissions, and events relate to one another.
+6. How to document the investigation in a repeatable and understandable way.
 
-Whenever practical:
-
-1. Identify the object, service, or data source being investigated.
-2. Determine which interface is most appropriate for the task.
-3. Explore the available commands, queries, or views.
-4. Inspect raw information before filtering where possible.
-5. Understand the object structure and relationships.
-6. Filter the information needed for the investigation.
-7. Correlate findings with additional evidence when appropriate.
-8. Document commands, evidence, findings, and conclusions.
-
-> **Learning Goal:** These investigations are also an opportunity to become more comfortable with multiple Microsoft cloud interfaces and understand when each one is useful.
-
-### Personal Learning Priority
-
-```text
-Azure CLI
-    ↓
-PowerShell
-    ↓
-Microsoft Graph
-    ↓
-KQL / Azure Resource Graph
-    ↓
-Azure Portal
-```
-
-This priority reflects my personal learning approach, not a requirement of the Mad Hat investigations. The interface used in each case depends on the scenario, available permissions, and what provides the clearest path to the information being investigated.
+> **Learning Goal:** Use each investigation as an opportunity to improve both security investigation skills and familiarity with the administrative and investigative interfaces available within each platform.
