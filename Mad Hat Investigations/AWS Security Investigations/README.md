@@ -10,6 +10,22 @@ Investigation cases will be added as the training track becomes available and ha
 
 ---
 
+# AWS Security Investigations
+
+Hands-on Amazon Web Services security investigations completed through Mad Hat in live training environments.
+
+Each case represents a hands-on investigation focused on a major AWS security domain.
+
+> Training environment only. Completed investigations demonstrate hands-on analysis and are not presented as production customer incidents.
+
+## Investigation Index
+
+| Case | Investigation | Security Focus | Status |
+|---|---|---|:---:|
+| **MHI-AWS-001** | Coming Soon | AWS security investigation | ⏳ Pending |
+
+---
+
 ## Investigation Interfaces
 
 I use these AWS investigations as an opportunity to become more familiar with the different interfaces available for investigating Amazon Web Services environments.
