@@ -1,66 +1,99 @@
-## Management and Investigation Interfaces
+# Microsoft Cloud Interface Training Guide
 
-This repository intentionally uses multiple Microsoft cloud management interfaces.
+Microsoft cloud administration is performed through multiple interfaces.
 
-The goal is not to rely on one tool for everything. Different interfaces are better suited to different parts of Azure, Microsoft Entra ID, and security operations.
+No single interface exposes every capability.
 
-My primary interface is **Azure CLI**, with PowerShell, Microsoft Graph, KQL, Azure Resource Graph, and the Azure Portal used when they are better suited to the task.
+These guides document how I am learning to select the correct interface based on what I am investigating or managing.
 
-| Interface | Primary Use |
-|---|---|
-| [Azure CLI](guides/azure-cli.md) | Azure resource discovery, configuration, RBAC, policy, and command-line investigation |
-| [PowerShell](guides/powershell.md) | Automation, scripting, Microsoft administration, and reusable investigation workflows |
-| [Microsoft Graph](guides/microsoft-graph.md) | Microsoft Entra ID, identity, sign-ins, audit data, applications, and Microsoft 365 |
-| [KQL](guides/kql.md) | Log Analytics, Microsoft Sentinel, Defender, telemetry, and event investigation |
-| [Azure Resource Graph](guides/azure-resource-graph.md) | Large-scale Azure resource discovery and inventory |
-| [Azure Portal](guides/azure-portal.md) | Visual exploration, validation, and functionality not easily exposed through CLI |
-| [Bicep](guides/bicep.md) | Repeatable Infrastructure as Code deployments |
+## Interface Map
 
-### Interface Selection Philosophy
+| Interface | Best For | Main Skill Developed |
+|---|---|---|
+| Azure CLI | Azure resources | Resource investigation |
+| PowerShell | Automation and administration | Scripting |
+| Microsoft Graph | Identity and Microsoft 365 | API investigation |
+| KQL | Logs and telemetry | Security analysis |
+| Azure Resource Graph | Resource inventory at scale | Cloud reconnaissance |
+| Azure Portal | Visual exploration | Architecture awareness |
+| Bicep | Infrastructure creation | Infrastructure as Code |
+
+---
+
+## The Three Questions
+
+When approaching a task, determine:
+
+### 1. What am I interacting with?
+
+Examples:
+
+- Azure resource
+- Microsoft Entra identity
+- Azure RBAC assignment
+- Microsoft 365 object
+- Security event
+- Log record
+- Network resource
+
+### 2. Which interface is best suited to it?
+
+Examples:
 
 ```text
-What am I trying to investigate?
+Azure resource
+→ Azure CLI
 
-Azure resource or configuration
-        |
-        v
-Azure CLI
-        |
-        +-- Need large-scale inventory?
-        |        |
-        |        v
-        |   Azure Resource Graph
-        |
-        +-- Need automation?
-        |        |
-        |        v
-        |    PowerShell
-        |
-        +-- Identity / Entra / M365 data?
-        |        |
-        |        v
-        |   Microsoft Graph
-        |
-        +-- Logs / events / telemetry?
-        |        |
-        |        v
-        |       KQL
-        |
-        +-- Need visual validation or CLI/API cannot expose it?
-                 |
-                 v
-            Azure Portal
+Entra sign-in
+→ Microsoft Graph
+
+Sentinel logs
+→ KQL
+
+Hundreds of Azure resources
+→ Azure Resource Graph
+
+Repeatable infrastructure deployment
+→ Bicep
 ```
 
-### Investigation Rule
+### 3. What system/API is underneath the interface?
 
-Whenever possible:
+Examples:
 
-1. Discover the object.
-2. Inspect the raw output.
-3. Understand the JSON structure.
-4. Filter only after understanding the data.
-5. Record commands and evidence.
-6. Validate important conclusions using another interface when appropriate.
+```text
+Azure CLI
+→ Azure Resource Manager
 
-The objective is to understand the underlying Azure and Microsoft cloud systems rather than memorize individual commands.
+az ad
+→ Microsoft Graph
+
+Graph PowerShell
+→ Microsoft Graph
+
+Azure Portal
+→ ARM / Graph / service APIs
+
+Bicep
+→ Azure Resource Manager
+```
+
+Understanding the underlying service is more important than memorizing the interface.
+
+---
+
+## Learning Priority
+
+My current priority:
+
+```text
+1. Azure CLI
+2. PowerShell
+3. Microsoft Graph
+4. KQL
+5. Azure Resource Graph
+6. Azure Portal
+7. Bicep
+```
+
+The Azure Portal remains useful throughout the learning process but is primarily used for visual discovery and validation rather than as the default investigation method.
