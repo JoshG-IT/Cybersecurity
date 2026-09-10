@@ -1,10 +1,10 @@
 # Microsoft Cloud Interface Training Guide
 
-Microsoft cloud administration is performed through multiple interfaces.
+Microsoft cloud administration and security investigation can be performed through multiple interfaces.
 
 No single interface exposes every capability.
 
-These guides document how I am learning to select the correct interface based on what I am investigating or managing.
+These guides document how I am learning to select the appropriate interface based on what I am investigating, querying, or analyzing.
 
 ## Interface Map
 
@@ -15,8 +15,7 @@ These guides document how I am learning to select the correct interface based on
 | Microsoft Graph | Identity and Microsoft 365 | API investigation |
 | KQL | Logs and telemetry | Security analysis |
 | Azure Resource Graph | Resource inventory at scale | Cloud reconnaissance |
-| Azure Portal | Visual exploration | Architecture awareness |
-| Bicep | Infrastructure creation | Infrastructure as Code |
+| Azure Portal | Visual exploration and validation | Architecture awareness |
 
 ---
 
@@ -53,8 +52,11 @@ Sentinel logs
 Hundreds of Azure resources
 → Azure Resource Graph
 
-Repeatable infrastructure deployment
-→ Bicep
+Repeated investigation task
+→ PowerShell
+
+Visual exploration or validation
+→ Azure Portal
 ```
 
 ### 3. What system/API is underneath the interface?
@@ -71,11 +73,11 @@ az ad
 Graph PowerShell
 → Microsoft Graph
 
+Azure Resource Graph
+→ Azure Resource Graph service
+
 Azure Portal
 → ARM / Graph / service APIs
-
-Bicep
-→ Azure Resource Manager
 ```
 
 Understanding the underlying service is more important than memorizing the interface.
@@ -93,7 +95,10 @@ My current priority:
 4. KQL
 5. Azure Resource Graph
 6. Azure Portal
-7. Bicep
 ```
 
-The Azure Portal remains useful throughout the learning process but is primarily used for visual discovery and validation rather than as the default investigation method.
+This is a personal learning priority rather than a requirement of the Mad Hat investigations.
+
+The Azure Portal remains useful throughout the learning process and may be the primary interface used by a lab. I use the investigations as an opportunity to practice command-line, scripting, API, and query-based approaches when appropriate.
+
+The goal is to understand when each interface is useful and how the different interfaces relate to the underlying Microsoft cloud services.
