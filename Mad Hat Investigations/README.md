@@ -58,67 +58,79 @@ The portfolio reorganizes the concluding practical exercises into independent se
 
 ## Management and Investigation Interfaces
 
-This repository intentionally uses multiple Microsoft cloud management interfaces.
+Mad Hat investigations may be completed using different tools depending on the scenario, with many activities demonstrated through graphical interfaces such as the Azure Portal.
 
-The goal is not to rely on one tool for everything. Different interfaces are better suited to different parts of Azure, Microsoft Entra ID, and security operations.
+As part of this portfolio, I use these investigations as an opportunity to practice additional Microsoft cloud interfaces and query methods. This helps me build familiarity with command-line, scripting, API, and query-based workflows while still using the Azure Portal when it is the most practical option.
 
-My primary interface is **Azure CLI**, with PowerShell, Microsoft Graph, KQL, Azure Resource Graph, and the Azure Portal used when they are better suited to the task.
+My primary learning focus is **Azure CLI**, with PowerShell, Microsoft Graph, KQL, and Azure Resource Graph used when they are relevant to an investigation.
 
-| Interface | Primary Use |
+| Interface / Method | Primary Use |
 |---|---|
-| [Azure CLI](guides/azure-cli.md) | Azure resource discovery, configuration, RBAC, policy, and command-line investigation |
-| [PowerShell](guides/powershell.md) | Automation, scripting, Microsoft administration, and reusable investigation workflows |
-| [Microsoft Graph](guides/microsoft-graph.md) | Microsoft Entra ID, identity, sign-ins, audit data, applications, and Microsoft 365 |
-| [KQL](guides/kql.md) | Log Analytics, Microsoft Sentinel, Defender, telemetry, and event investigation |
-| [Azure Resource Graph](guides/azure-resource-graph.md) | Large-scale Azure resource discovery and inventory |
-| [Azure Portal](guides/azure-portal.md) | Visual exploration, validation, and functionality not easily exposed through CLI |
-| [Bicep](guides/bicep.md) | Repeatable Infrastructure as Code deployments |
+| [Azure CLI](Guides/azure-cli.md) | Azure resource discovery, configuration inspection, RBAC, Policy, locks, tags, networking, and reconnaissance |
+| [PowerShell](Guides/powershell.md) | Scripting, automation, loops, reusable investigation functions, and processing command output |
+| [Microsoft Graph](Guides/microsoft-graph.md) | Microsoft Entra ID, users, groups, applications, service principals, sign-ins, audit data, and directory information |
+| [KQL](Guides/kql.md) | Log Analytics, Microsoft Sentinel, Defender telemetry, event investigation, and security analytics |
+| [Azure Resource Graph](Guides/azure-resource-graph.md) | Large-scale Azure resource inventory, filtering, and cross-subscription discovery |
+| [Azure Portal](Guides/azure-portal.md) | Visual exploration, validation, and tasks better suited to a graphical interface |
 
-### Interface Selection Philosophy
+### Interface Selection
 
 ```text
-What am I trying to investigate?
-
-Azure resource or configuration
+What am I investigating?
         |
-        v
-Azure CLI
+        +-- Azure resource, RBAC, Policy, lock, tag, network
+        |       |
+        |       --> Azure CLI
         |
-        +-- Need large-scale inventory?
-        |        |
-        |        v
-        |   Azure Resource Graph
+        +-- Repeated task, scripting, or automation
+        |       |
+        |       --> PowerShell
         |
-        +-- Need automation?
-        |        |
-        |        v
-        |    PowerShell
+        +-- Entra ID, identity, sign-in, or directory data
+        |       |
+        |       --> Microsoft Graph
         |
-        +-- Identity / Entra / M365 data?
-        |        |
-        |        v
-        |   Microsoft Graph
+        +-- Logs, events, telemetry, or security activity
+        |       |
+        |       --> KQL
         |
-        +-- Logs / events / telemetry?
-        |        |
-        |        v
-        |       KQL
+        +-- Large-scale Azure resource inventory
+        |       |
+        |       --> Azure Resource Graph
         |
-        +-- Need visual validation or CLI/API cannot expose it?
-                 |
-                 v
-            Azure Portal
+        +-- Visual exploration, validation, or a task
+                better suited to a graphical interface
+                |
+                --> Azure Portal
 ```
 
-### Investigation Rule
+### Investigation Workflow
 
-Whenever possible:
+Whenever practical:
 
-1. Discover the object.
-2. Inspect the raw output.
-3. Understand the JSON structure.
-4. Filter only after understanding the data.
-5. Record commands and evidence.
-6. Validate important conclusions using another interface when appropriate.
+1. Identify the object, service, or data source being investigated.
+2. Determine which interface is most appropriate for the task.
+3. Explore the available commands, queries, or views.
+4. Inspect raw information before filtering where possible.
+5. Understand the object structure and relationships.
+6. Filter the information needed for the investigation.
+7. Correlate findings with additional evidence when appropriate.
+8. Document commands, evidence, findings, and conclusions.
 
-The objective is to understand the underlying Azure and Microsoft cloud systems rather than memorize individual commands.
+> **Learning Goal:** These investigations are also an opportunity to become more comfortable with multiple Microsoft cloud interfaces and understand when each one is useful.
+
+### Personal Learning Priority
+
+```text
+Azure CLI
+    ↓
+PowerShell
+    ↓
+Microsoft Graph
+    ↓
+KQL / Azure Resource Graph
+    ↓
+Azure Portal
+```
+
+This priority reflects my personal learning approach, not a requirement of the Mad Hat investigations. The interface used in each case depends on the scenario, available permissions, and what provides the clearest path to the information being investigated.
